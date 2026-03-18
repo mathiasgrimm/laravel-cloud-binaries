@@ -41,6 +41,23 @@ composer require mathiasgrimm/laravel-cloud-binaries
 
 Composer will symlink all 8 binaries into `vendor/bin/`.
 
+## Usage
+
+After installation, the binaries are available in `vendor/bin/`:
+
+```bash
+vendor/bin/jpegoptim --strip-all image.jpg
+vendor/bin/optipng -o2 image.png
+vendor/bin/pngquant --quality=65-80 image.png
+vendor/bin/cwebp -q 80 image.png -o image.webp
+vendor/bin/dwebp image.webp -o image.png
+vendor/bin/avifenc image.png image.avif
+vendor/bin/avifdec image.avif image.png
+vendor/bin/gifsicle -O3 animation.gif -o optimized.gif
+```
+
+> **Note:** These are statically compiled Linux (musl) binaries. They will work on Laravel Cloud and other Linux environments but **not** on macOS or Windows.
+
 ## Building from source
 
 ### Prerequisites
