@@ -21,14 +21,17 @@ All binaries are statically linked against musl libc (Alpine Linux). They will *
 
 All upstream versions are defined at the top of the `Makefile` and passed to each Dockerfile via `--build-arg`. To bump a version, change the single variable in the Makefile.
 
-| Binary | Variable | Current version |
-|--------|----------|-----------------|
-| jpegoptim | `JPEGOPTIM_VERSION` | `v1.5.6` |
-| optipng | `OPTIPNG_VERSION` | `0.7.8` |
-| pngquant | `PNGQUANT_VERSION` | `3.0.3` |
-| cwebp/dwebp | `LIBWEBP_VERSION` | `v1.5.0` |
-| avifenc/avifdec | `LIBAVIF_VERSION` | `v1.2.1` |
-| gifsicle | `GIFSICLE_VERSION` | `v1.96` |
+| Binary | Variable | Current version | Size |
+|--------|----------|-----------------|------|
+| jpegoptim | `JPEGOPTIM_VERSION` | `v1.5.6` | 1.0 MB |
+| optipng | `OPTIPNG_VERSION` | `0.7.8` | 797 KB |
+| pngquant | `PNGQUANT_VERSION` | `3.0.3` | 1.3 MB |
+| cwebp | `LIBWEBP_VERSION` | `v1.5.0` | 1.6 MB |
+| dwebp | `LIBWEBP_VERSION` | `v1.5.0` | 1.3 MB |
+| avifenc | `LIBAVIF_VERSION` | `v1.2.1` | 7.8 MB |
+| avifdec | `LIBAVIF_VERSION` | `v1.2.1` | 7.7 MB |
+| gifsicle | `GIFSICLE_VERSION` | `v1.96` | 1.3 MB |
+| **Total** | | | **22.7 MB** |
 
 ## Installation
 
