@@ -94,6 +94,15 @@ make bin/gifsicle
 make -j4
 ```
 
+### Testing
+
+Verify that all binaries work correctly by running them inside an Alpine Docker container:
+
+```bash
+make test          # build (if needed) + test
+make test-only     # test without rebuilding
+```
+
 ### Clean up
 
 ```bash
