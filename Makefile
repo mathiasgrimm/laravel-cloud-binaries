@@ -9,7 +9,7 @@ GIFSICLE_VERSION  := v1.96
 
 BINARIES := bin/jpegoptim bin/optipng bin/pngquant bin/cwebp bin/dwebp bin/avifenc bin/avifdec bin/gifsicle
 
-.PHONY: all test clean clean-images clean-all
+.PHONY: all test test-only clean clean-images clean-all
 
 all: $(BINARIES)
 
@@ -70,7 +70,9 @@ bin/gifsicle: gifsicle/Dockerfile
 	docker rm tmp-gifsicle
 
 # --- Test ---
-test: $(BINARIES)
+test: $(BINARIES) test-only
+
+test-only:
 	docker run --rm -v $(CURDIR)/bin:/opt/bin alpine sh -c ' \
 		set -e && \
 		/opt/bin/jpegoptim --version && \
