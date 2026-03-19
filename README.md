@@ -69,6 +69,23 @@ git commit -m "Add image optimization binaries"
 
 Then reference them from your application using `base_path('bin/jpegoptim')` (or whichever path you chose). Since the binaries are committed to your repository, they are available immediately during deployment with no Composer overhead.
 
+To keep your committed binaries in sync automatically when the package is updated, add a `post-update-cmd` script to your `composer.json`:
+
+```json
+{
+    "scripts": {
+        "post-update-cmd": [
+            "@php -r \"@mkdir('bin', 0755, true);\"",
+            "@php -r \"copy('vendor/mathiasgrimm/laravel-cloud-binaries/bin/jpegoptim', 'bin/jpegoptim');\"",
+            "@php -r \"copy('vendor/mathiasgrimm/laravel-cloud-binaries/bin/optipng', 'bin/optipng');\"",
+            "@php -r \"copy('vendor/mathiasgrimm/laravel-cloud-binaries/bin/pngquant', 'bin/pngquant');\""
+        ]
+    }
+}
+```
+
+After every `composer update`, the selected binaries are copied into `bin/` automatically. Adjust the list to include only the binaries you need. The `@php -r` syntax ensures the commands work on all platforms (Linux, macOS, and Windows).
+
 ## Usage
 
 After installation, the binaries are available in `vendor/bin/`:
