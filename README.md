@@ -49,6 +49,26 @@ composer require mathiasgrimm/laravel-cloud-binaries
 
 Composer will symlink all 11 binaries into `vendor/bin/`.
 
+## Selective installation (faster deploys)
+
+If you only need a few binaries, you can install the package as a dev dependency, copy just the ones you need into your repository, and avoid downloading the full ~93 MB on every deploy:
+
+```bash
+composer require --dev mathiasgrimm/laravel-cloud-binaries
+
+# Copy only the binaries you need into your project
+mkdir -p bin
+cp vendor/bin/jpegoptim bin/
+cp vendor/bin/optipng bin/
+cp vendor/bin/pngquant bin/
+
+# Commit them
+git add bin/
+git commit -m "Add image optimization binaries"
+```
+
+Then reference them from your application using `base_path('bin/jpegoptim')` (or whichever path you chose). Since the binaries are committed to your repository, they are available immediately during deployment with no Composer overhead.
+
 ## Usage
 
 After installation, the binaries are available in `vendor/bin/`:
