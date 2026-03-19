@@ -4,10 +4,12 @@ OPTIPNG_VERSION   := 0.7.8
 PNGQUANT_VERSION  := 3.0.3
 LIBWEBP_VERSION   := v1.5.0
 LIBAVIF_VERSION   := v1.2.1
-GIFSICLE_VERSION  := v1.96
+GIFSICLE_VERSION     := v1.96
+FFMPEG_VERSION       := n7.1.1
+IMAGEMAGICK_VERSION  := 7.1.1-43
 # ────────────────────────────────────────────────────────────
 
-BINARIES := bin/jpegoptim bin/optipng bin/pngquant bin/cwebp bin/dwebp bin/avifenc bin/avifdec bin/gifsicle
+BINARIES := bin/jpegoptim bin/optipng bin/pngquant bin/cwebp bin/dwebp bin/avifenc bin/avifdec bin/gifsicle bin/ffmpeg bin/ffprobe bin/magick
 
 .PHONY: all test test-only clean clean-images clean-all
 
@@ -69,6 +71,25 @@ bin/gifsicle: gifsicle/Dockerfile
 	docker cp tmp-gifsicle:/gifsicle bin/gifsicle
 	docker rm tmp-gifsicle
 
+# --- ffmpeg + ffprobe (single image, two binaries) ---
+bin/ffmpeg bin/ffprobe: ffmpeg/Dockerfile
+	mkdir -p bin
+	docker build --build-arg VERSION=$(FFMPEG_VERSION) -t ffmpeg ./ffmpeg
+	docker rm -f tmp-ffmpeg 2>/dev/null || true
+	docker create --name tmp-ffmpeg ffmpeg /true
+	docker cp tmp-ffmpeg:/ffmpeg bin/ffmpeg
+	docker cp tmp-ffmpeg:/ffprobe bin/ffprobe
+	docker rm tmp-ffmpeg
+
+# --- magick ---
+bin/magick: imagemagick/Dockerfile
+	mkdir -p bin
+	docker build --build-arg VERSION=$(IMAGEMAGICK_VERSION) -t imagemagick ./imagemagick
+	docker rm -f tmp-imagemagick 2>/dev/null || true
+	docker create --name tmp-imagemagick imagemagick /true
+	docker cp tmp-imagemagick:/magick bin/magick
+	docker rm tmp-imagemagick
+
 # --- Test ---
 test: $(BINARIES) test-only
 
@@ -83,6 +104,9 @@ test-only:
 		/opt/bin/avifenc --version && \
 		/opt/bin/avifdec --version && \
 		/opt/bin/gifsicle --version && \
+		/opt/bin/ffmpeg -version && \
+		/opt/bin/ffprobe -version && \
+		/opt/bin/magick -version && \
 		echo "All binaries OK" \
 	'
 
@@ -91,6 +115,6 @@ clean:
 	find bin -mindepth 1 ! -name .gitkeep -delete
 
 clean-images:
-	docker rmi -f jpegoptim optipng pngquant cwebp avifenc gifsicle 2>/dev/null || true
+	docker rmi -f jpegoptim optipng pngquant cwebp avifenc gifsicle ffmpeg imagemagick 2>/dev/null || true
 
 clean-all: clean clean-images

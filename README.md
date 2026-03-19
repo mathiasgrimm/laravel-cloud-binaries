@@ -16,6 +16,9 @@ This package includes all the binaries required by [spatie/image-optimizer](http
 | `avifenc` | AVIF encoding |
 | `avifdec` | AVIF decoding |
 | `gifsicle` | GIF optimization |
+| `ffmpeg` | Audio/video transcoding |
+| `ffprobe` | Media stream analysis |
+| `magick` | ImageMagick 7 (replaces convert/identify/mogrify) |
 
 All binaries are statically linked against musl libc (Alpine Linux). They will **not** run on macOS — this is expected.
 
@@ -33,7 +36,10 @@ All upstream versions are defined at the top of the `Makefile` and passed to eac
 | avifenc | `LIBAVIF_VERSION` | `v1.2.1` | 7.8 MB |
 | avifdec | `LIBAVIF_VERSION` | `v1.2.1` | 7.7 MB |
 | gifsicle | `GIFSICLE_VERSION` | `v1.96` | 1.3 MB |
-| **Total** | | | **22.7 MB** |
+| ffmpeg | `FFMPEG_VERSION` | `n7.1.1` | 29 MB |
+| ffprobe | `FFMPEG_VERSION` | `n7.1.1` | 29 MB |
+| magick | `IMAGEMAGICK_VERSION` | `7.1.1-43` | 12 MB |
+| **Total** | | | **93 MB** |
 
 ## Installation
 
@@ -41,7 +47,7 @@ All upstream versions are defined at the top of the `Makefile` and passed to eac
 composer require mathiasgrimm/laravel-cloud-binaries
 ```
 
-Composer will symlink all 8 binaries into `vendor/bin/`.
+Composer will symlink all 11 binaries into `vendor/bin/`.
 
 ## Usage
 
@@ -56,6 +62,9 @@ vendor/bin/dwebp image.webp -o image.png
 vendor/bin/avifenc image.png image.avif
 vendor/bin/avifdec image.avif image.png
 vendor/bin/gifsicle -O3 animation.gif -o optimized.gif
+vendor/bin/ffmpeg -i input.mp4 -c:v libx264 output.mp4
+vendor/bin/ffprobe -v quiet -print_format json -show_format input.mp4
+vendor/bin/magick input.png -resize 50% output.png
 ```
 
 > **Note:** These are statically compiled Linux (musl) binaries. They will work on Laravel Cloud and other Linux environments but **not** on macOS or Windows.
@@ -86,6 +95,9 @@ make bin/dwebp
 make bin/avifenc
 make bin/avifdec
 make bin/gifsicle
+make bin/ffmpeg
+make bin/ffprobe
+make bin/magick
 ```
 
 ### Parallel builds
@@ -130,6 +142,8 @@ The Makefile orchestrates building the Docker images and extracting the binaries
 ├── cwebp/Dockerfile        # builds cwebp + dwebp
 ├── avifenc/Dockerfile      # builds avifenc + avifdec
 ├── gifsicle/Dockerfile
+├── ffmpeg/Dockerfile       # builds ffmpeg + ffprobe
+├── imagemagick/Dockerfile  # builds magick
 ├── bin/                    # build output (committed)
 ├── Makefile
 ├── composer.json

@@ -1,6 +1,6 @@
 {
     "name": "mathiasgrimm/laravel-cloud-binaries",
-    "description": "Pre-built static binaries for Laravel Cloud (jpegoptim, optipng, pngquant, cwebp, dwebp, avifenc, avifdec, gifsicle)",
+    "description": "Pre-built static binaries for Laravel Cloud (jpegoptim, optipng, pngquant, cwebp, dwebp, avifenc, avifdec, gifsicle, ffmpeg, ffprobe, magick)",
     "authors": [
         {
             "name": "Mathias Grimm",
@@ -15,7 +15,10 @@
         "bin/dwebp",
         "bin/avifenc",
         "bin/avifdec",
-        "bin/gifsicle"
+        "bin/gifsicle",
+        "bin/ffmpeg",
+        "bin/ffprobe",
+        "bin/magick"
     ],
     "require": {}
 }
