@@ -168,21 +168,3 @@ Each tool has its own Dockerfile under `<tool>/Dockerfile`. The Dockerfiles use 
 2. **Final stage** — `FROM scratch`, copies only the static binary
 
 The Makefile orchestrates building the Docker images and extracting the binaries into `bin/`.
-
-## Project structure
-
-```
-.
-├── jpegoptim/Dockerfile
-├── optipng/Dockerfile
-├── pngquant/Dockerfile
-├── cwebp/Dockerfile        # builds cwebp + dwebp
-├── avifenc/Dockerfile      # builds avifenc + avifdec
-├── gifsicle/Dockerfile
-├── ffmpeg/Dockerfile       # builds ffmpeg + ffprobe
-├── imagemagick/Dockerfile  # builds magick
-├── bin/                    # build output (committed)
-├── Makefile
-├── composer.json
-└── README.md
-```
