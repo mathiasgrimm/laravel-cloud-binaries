@@ -1,6 +1,6 @@
 {
     "name": "mathiasgrimm/laravel-cloud-binaries",
-    "description": "Pre-built static binaries for Laravel Cloud (jpegoptim, optipng, pngquant, cwebp, dwebp, avifenc, avifdec, gifsicle, ffmpeg, ffprobe, magick, pdftotext, pdftoppm, pdftohtml, pdfimages, pdfinfo, pdfunite, pdfseparate)",
+    "description": "Pre-built static binaries for Laravel Cloud (jpegoptim, optipng, pngquant, cwebp, dwebp, avifenc, avifdec, gifsicle, ffmpeg, ffprobe, magick, poppler (pdftotext, pdftoppm, pdftohtml, pdfimages, pdfinfo, pdfunite, pdfseparate))",
     "license": "MIT",
     "authors": [
         {
