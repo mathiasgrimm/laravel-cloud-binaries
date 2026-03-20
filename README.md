@@ -19,6 +19,13 @@ This package includes all the binaries required by [spatie/image-optimizer](http
 | `ffmpeg` | Audio/video transcoding |
 | `ffprobe` | Media stream analysis |
 | `magick` | ImageMagick 7 (replaces convert/identify/mogrify) |
+| `pdftotext` | PDF to text extraction (poppler) |
+| `pdftoppm` | PDF to PPM/JPEG/PNG image conversion (poppler) |
+| `pdftohtml` | PDF to HTML conversion (poppler) |
+| `pdfimages` | Extract images from PDF (poppler) |
+| `pdfinfo` | PDF document information (poppler) |
+| `pdfunite` | Merge multiple PDFs (poppler) |
+| `pdfseparate` | Split PDF into individual pages (poppler) |
 
 All binaries are statically linked against musl libc (Alpine Linux). They will **not** run on macOS — this is expected.
 
@@ -39,7 +46,14 @@ All upstream versions are defined at the top of the `Makefile` and passed to eac
 | ffmpeg | `FFMPEG_VERSION` | `n7.1.1` | 29 MB |
 | ffprobe | `FFMPEG_VERSION` | `n7.1.1` | 29 MB |
 | magick | `IMAGEMAGICK_VERSION` | `7.1.1-43` | 12 MB |
-| **Total** | | | **93 MB** |
+| pdftotext | `POPPLER_VERSION` | `24.12.0` | 9.1 MB |
+| pdftoppm | `POPPLER_VERSION` | `24.12.0` | 9.2 MB |
+| pdftohtml | `POPPLER_VERSION` | `24.12.0` | 9.2 MB |
+| pdfimages | `POPPLER_VERSION` | `24.12.0` | 8.9 MB |
+| pdfinfo | `POPPLER_VERSION` | `24.12.0` | 8.9 MB |
+| pdfunite | `POPPLER_VERSION` | `24.12.0` | 8.9 MB |
+| pdfseparate | `POPPLER_VERSION` | `24.12.0` | 8.9 MB |
+| **Total** | | | **156 MB** |
 
 ## Installation
 
@@ -47,11 +61,11 @@ All upstream versions are defined at the top of the `Makefile` and passed to eac
 composer require mathiasgrimm/laravel-cloud-binaries
 ```
 
-Composer will symlink all 11 binaries into `vendor/bin/`.
+Composer will symlink all 18 binaries into `vendor/bin/`.
 
 ## Selective installation (faster deploys)
 
-If you only need a few binaries, you can install the package as a dev dependency, copy just the ones you need into your repository, and avoid downloading the full ~93 MB on every deploy:
+If you only need a few binaries, you can install the package as a dev dependency, copy just the ones you need into your repository, and avoid downloading the full ~156 MB on every deploy:
 
 ```bash
 composer require --dev mathiasgrimm/laravel-cloud-binaries
@@ -102,6 +116,13 @@ vendor/bin/gifsicle -O3 animation.gif -o optimized.gif
 vendor/bin/ffmpeg -i input.mp4 -c:v libx264 output.mp4
 vendor/bin/ffprobe -v quiet -print_format json -show_format input.mp4
 vendor/bin/magick input.png -resize 50% output.png
+vendor/bin/pdftotext document.pdf document.txt
+vendor/bin/pdftoppm -png document.pdf output
+vendor/bin/pdftohtml document.pdf output.html
+vendor/bin/pdfimages -png document.pdf images/img
+vendor/bin/pdfinfo document.pdf
+vendor/bin/pdfunite part1.pdf part2.pdf merged.pdf
+vendor/bin/pdfseparate document.pdf page-%d.pdf
 ```
 
 > **Note:** These are statically compiled Linux (musl) binaries. They will work on Laravel Cloud and other Linux environments but **not** on macOS or Windows.
@@ -135,6 +156,13 @@ make bin/gifsicle
 make bin/ffmpeg
 make bin/ffprobe
 make bin/magick
+make bin/pdftotext
+make bin/pdftoppm
+make bin/pdftohtml
+make bin/pdfimages
+make bin/pdfinfo
+make bin/pdfunite
+make bin/pdfseparate
 ```
 
 ### Parallel builds
