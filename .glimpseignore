@@ -1,0 +1,9 @@
+# Created by glimpse init. Paths listed here are excluded from glimpse
+# scans (check, analyze), using gitignore syntax relative to this file.
+
+# The distributed binaries: ~95 MB of static ELF executables, never images
+bin/
+
+# Dependencies you do not control
+vendor/
+node_modules/
