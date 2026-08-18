@@ -1,0 +1,26 @@
+name: Glimpse
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check-images:
+    runs-on: ubuntu-latest
+    env:
+      # Optional. Without it (for example on fork pull requests, which
+      # never receive secrets) the CLI uses its built-in public token,
+      # which only allows check and analyze and shares rate limits.
+      GLIMPSE_TOKEN: ${{ secrets.GLIMPSE_TOKEN }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install glimpse
+        run: |
+          composer global require --no-interaction --no-progress mathiasgrimm/glimpse-cli
+          composer global config bin-dir --absolute --quiet >> "$GITHUB_PATH"
+      - name: Check images
+        run: glimpse check .

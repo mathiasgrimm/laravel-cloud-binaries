@@ -7,6 +7,8 @@ bin/* binary
 /art            export-ignore
 .gitattributes  export-ignore
 .gitignore      export-ignore
+.glimpseignore  export-ignore
+/.glimpse-baseline.json export-ignore
 
 # NOTE: the Makefile and the per-tool Dockerfiles are deliberately NOT
 # export-ignored. Together they are the scripts used to control compilation of

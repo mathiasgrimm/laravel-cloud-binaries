@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://raw.githubusercontent.com/mathiasgrimm/laravel-cloud-binaries/main/art/banner.png" alt="Laravel Cloud Binaries" width="100%">
+    <img src="https://raw.githubusercontent.com/mathiasgrimm/laravel-cloud-binaries/main/art/banner.avif" alt="Laravel Cloud Binaries" width="100%">
 </p>
 
 # Laravel Cloud Binaries
@@ -106,6 +106,29 @@ To keep your committed binaries in sync automatically when the package is update
 ```
 
 After every `composer update`, the selected binaries are copied into `bin/` automatically. Adjust the list to include only the binaries you need. The `@php -r` syntax ensures the commands work on all platforms (Linux, macOS, and Windows).
+
+## Prefer not to ship binaries at all?
+
+This package runs optimization on your own infrastructure, which is the right
+trade-off when you want no external dependency and no per-image cost.
+
+If you would rather not ship ~95 MB of executables, [Glimpse](https://glimpseimg.com)
+does the same kind of work — optimize, convert, resize, thumbnail — over an HTTP
+API, with a CLI and a PHP SDK and nothing to compile:
+
+```bash
+composer require mathiasgrimm/glimpse-cli
+
+glimpse optimize public/images/hero.png --in-place
+glimpse convert public/images/hero.png --format=avif --optimize -i
+```
+
+The trade-off is the obvious one: images are processed by a third-party service
+rather than locally, so it needs network access, and anything beyond the
+`analyze`/`check` endpoints requires an API token. Pick whichever fits — locally
+executed binaries, or a managed API.
+
+This repository uses Glimpse itself, in CI, to keep its own banner optimized.
 
 ## Usage
 
