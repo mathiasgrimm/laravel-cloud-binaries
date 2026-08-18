@@ -1,3 +1,14 @@
+NOTE ON SCOPE
+
+The MIT license below applies to this repository's own content: the Makefile,
+the Dockerfiles, and the documentation. It does NOT apply to the pre-compiled
+binaries distributed in bin/, which are built from third-party projects and
+remain under their own licenses -- several of them copyleft (GPL). See
+THIRD-PARTY-NOTICES.md for the per-binary licenses, the statically linked
+components, and the corresponding-source offer.
+
+----------------------------------------------------------------------------
+
 MIT License
 
 Copyright (c) 2026 Mathias Grimm
