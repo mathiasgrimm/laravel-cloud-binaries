@@ -1,6 +1,6 @@
 # Laravel Cloud Binaries
 
-Pre-built, statically compiled binaries for Linux (arm64/musl). Designed to be installed as a Composer package so that `vendor/bin/` contains ready-to-use tools on Laravel Cloud (or any Linux environment).
+Pre-built, statically compiled binaries for Linux (arm64/musl). Designed to be installed as a Composer package so that `vendor/bin/` contains ready-to-use tools on Laravel Cloud (or any Linux arm64 environment).
 
 This package includes all the binaries required by [spatie/image-optimizer](https://github.com/spatie/image-optimizer), making it a drop-in solution for image optimization on environments where system packages are not available. Note that [svgo](https://github.com/svg/svgo) is not included as it is a regular npm package and can be installed via `npm install -g svgo`.
 
@@ -125,7 +125,7 @@ make
 
 Binaries are output to the `bin/` directory.
 
-Each Dockerfile builds for the host architecture, so run the build on an arm64 machine (Apple Silicon, or any aarch64 Linux host) to reproduce the committed binaries. To build for a different architecture, pass `--platform` through Docker — e.g. `docker build --platform linux/amd64 ...` — bearing in mind that emulated builds are considerably slower.
+Each Dockerfile builds for the host architecture, so run the build on an arm64 machine (Apple Silicon, or any aarch64 Linux host) to match the architecture of the committed binaries. Builds are not byte-for-byte reproducible — the Dockerfiles track `alpine:latest` and unpinned apk packages, so only the upstream tool version is pinned. To build for a different architecture, pass `--platform` through Docker — e.g. `docker build --platform linux/amd64 ...` — bearing in mind that emulated builds are considerably slower.
 
 ### Build a single binary
 
