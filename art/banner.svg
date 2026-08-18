@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="720" viewBox="0 0 2400 720">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="0.55">
+      <stop offset="0"   stop-color="#0B1221"/>
+      <stop offset="0.5" stop-color="#131B2B"/>
+      <stop offset="1"   stop-color="#192234"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0"    stop-color="#FF6A3D" stop-opacity="0.30"/>
+      <stop offset="0.45" stop-color="#FF5A2E" stop-opacity="0.12"/>
+      <stop offset="1"    stop-color="#FF5A2E" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="round"><rect width="2400" height="720" rx="56" ry="56"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#round)">
+    <rect width="2400" height="720" fill="url(#bg)"/>
+    <ellipse cx="470" cy="350" rx="330" ry="300" fill="url(#glow)"/>
+
+    <!-- terminal prompt -->
+    <rect x="300" y="230" width="270" height="240" rx="34" fill="#FFFFFF"/>
+    <path d="M 362 302 L 424 350 L 362 398" fill="none" stroke="#0B1221"
+          stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="444" y="382" width="76" height="22" rx="11" fill="#0B1221"/>
+
+    <!-- optimizer bars -->
+    <rect x="622" y="252" width="186" height="26" rx="13" fill="#FC412E"/>
+    <rect x="622" y="337" width="138" height="26" rx="13" fill="#FC412E"/>
+    <rect x="622" y="422" width="92"  height="26" rx="13" fill="#FC412E"/>
+  </g>
+
+  <g font-family="Helvetica, Arial, sans-serif"><text x="884" y="356" font-size="120" font-weight="bold" xml:space="preserve"><tspan fill="#FFFFFF">Laravel Cloud </tspan><tspan fill="#FC412E">Binaries</tspan></text><text x="887" y="452" font-size="49" fill="#93A2B7">Pre-built static binaries, ready in vendor/bin</text><text x="887" y="530" font-size="35" fill="#64748B">ffmpeg, ImageMagick, and 10 more</text></g>
+</svg>
