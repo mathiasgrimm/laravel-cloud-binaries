@@ -8,9 +8,10 @@ GIFSICLE_VERSION     := v1.96
 FFMPEG_VERSION       := n7.1.1
 IMAGEMAGICK_VERSION  := 7.1.1-43
 ZSTD_VERSION         := v1.5.7
+LIBVIPS_VERSION      := v8.18.5
 # ────────────────────────────────────────────────────────────
 
-BINARIES := bin/jpegoptim bin/optipng bin/pngquant bin/cwebp bin/dwebp bin/avifenc bin/avifdec bin/gifsicle bin/ffmpeg bin/ffprobe bin/magick bin/zstd
+BINARIES := bin/jpegoptim bin/optipng bin/pngquant bin/cwebp bin/dwebp bin/avifenc bin/avifdec bin/gifsicle bin/ffmpeg bin/ffprobe bin/magick bin/zstd bin/vips bin/vipsthumbnail
 
 .PHONY: all test test-only clean clean-images clean-all
 
@@ -100,6 +101,16 @@ bin/zstd: zstd/Dockerfile
 	docker cp tmp-zstd:/zstd bin/zstd
 	docker rm tmp-zstd
 
+# --- vips + vipsthumbnail (single image, two binaries) ---
+bin/vips bin/vipsthumbnail: vips/Dockerfile
+	mkdir -p bin
+	docker build --build-arg VERSION=$(LIBVIPS_VERSION) -t vips ./vips
+	docker rm -f tmp-vips 2>/dev/null || true
+	docker create --name tmp-vips vips /true
+	docker cp tmp-vips:/vips bin/vips
+	docker cp tmp-vips:/vipsthumbnail bin/vipsthumbnail
+	docker rm tmp-vips
+
 # --- Test ---
 test: $(BINARIES) test-only
 
@@ -118,6 +129,8 @@ test-only:
 		/opt/bin/ffprobe -version && \
 		/opt/bin/magick -version && \
 		/opt/bin/zstd --version && \
+		/opt/bin/vips --version && \
+		/opt/bin/vipsthumbnail --version && \
 		echo "All binaries OK" \
 	'
 
@@ -126,6 +139,6 @@ clean:
 	find bin -mindepth 1 ! -name .gitkeep -delete
 
 clean-images:
-	docker rmi -f jpegoptim optipng pngquant cwebp avifenc gifsicle ffmpeg imagemagick zstd 2>/dev/null || true
+	docker rmi -f jpegoptim optipng pngquant cwebp avifenc gifsicle ffmpeg imagemagick zstd vips 2>/dev/null || true
 
 clean-all: clean clean-images

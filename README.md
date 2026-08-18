@@ -39,6 +39,8 @@ This package includes all the binaries required by [spatie/image-optimizer](http
 | `ffprobe` | Media stream analysis |
 | `magick` | ImageMagick 7 (replaces convert/identify/mogrify) |
 | `zstd` | Zstandard compression/decompression |
+| `vips` | libvips image processing (fast resize, convert, composite) |
+| `vipsthumbnail` | libvips thumbnailer |
 
 All binaries are statically linked against musl libc (Alpine Linux) and built for **arm64** (aarch64). They will **not** run on macOS, nor on x86-64 (amd64) Linux hosts — this is expected.
 
@@ -60,7 +62,9 @@ All upstream versions are defined at the top of the `Makefile` and passed to eac
 | ffprobe | `FFMPEG_VERSION` | `n7.1.1` | 29 MB |
 | magick | `IMAGEMAGICK_VERSION` | `7.1.1-43` | 12 MB |
 | zstd | `ZSTD_VERSION` | `v1.5.7` | 2.0 MB |
-| **Total** | | | **95 MB** |
+| vips | `LIBVIPS_VERSION` | `v8.18.5` | 23 MB |
+| vipsthumbnail | `LIBVIPS_VERSION` | `v8.18.5` | 23 MB |
+| **Total** | | | **140 MB** |
 
 ## Installation
 
@@ -68,11 +72,11 @@ All upstream versions are defined at the top of the `Makefile` and passed to eac
 composer require mathiasgrimm/laravel-cloud-binaries
 ```
 
-Composer will symlink all 12 binaries into `vendor/bin/`.
+Composer will symlink all 14 binaries into `vendor/bin/`.
 
 ## Selective installation (faster deploys)
 
-If you only need a few binaries, you can install the package as a dev dependency, copy just the ones you need into your repository, and avoid downloading the full ~95 MB on every deploy:
+If you only need a few binaries, you can install the package as a dev dependency, copy just the ones you need into your repository, and avoid downloading the full ~140 MB on every deploy:
 
 ```bash
 composer require --dev mathiasgrimm/laravel-cloud-binaries
@@ -107,12 +111,31 @@ To keep your committed binaries in sync automatically when the package is update
 
 After every `composer update`, the selected binaries are copied into `bin/` automatically. Adjust the list to include only the binaries you need. The `@php -r` syntax ensures the commands work on all platforms (Linux, macOS, and Windows).
 
+## About the libvips build
+
+`vips` and `vipsthumbnail` are built with JPEG, PNG, WebP, TIFF, PPM, Radiance and
+Analyze support, plus SIMD acceleration (Highway), ICC colour management (lcms2) and
+EXIF metadata (libexif) — so orientation is honoured when thumbnailing. Two things are
+deliberately left out:
+
+- **No FFT operations.** FFTW is `GPL-2.0-or-later`, and linking it would upgrade these
+  binaries from libvips's own `LGPL-2.1-or-later` to GPL. `fwfft`, `invfft` and
+  `freqfilt` are not what this package is for. Flip `-Dfftw=enabled` in
+  `vips/Dockerfile` if you need them and accept the licence change.
+- **GIF load, but not GIF save.** libvips gates GIF writing behind a colour quantiser,
+  and both options are unattractive here: libimagequant is `GPL-3.0`, and quantizr needs
+  a full `cargo-c` toolchain. Use the `gifsicle` or `magick` binaries in this package to
+  write GIFs.
+
+Because libvips loads optional format support with `dlopen`, `-Dmodules=disabled` is
+required for a static build — every enabled format is compiled in directly.
+
 ## Prefer not to ship binaries at all?
 
 This package runs optimization on your own infrastructure, which is the right
 trade-off when you want no external dependency and no per-image cost.
 
-If you would rather not ship ~95 MB of executables, [Glimpse](https://glimpseimg.com)
+If you would rather not ship ~140 MB of executables, [Glimpse](https://glimpseimg.com)
 does the same kind of work — optimize, convert, resize, thumbnail — over an HTTP
 API, with a CLI and a PHP SDK and nothing to compile:
 
@@ -148,6 +171,9 @@ vendor/bin/ffprobe -v quiet -print_format json -show_format input.mp4
 vendor/bin/magick input.png -resize 50% output.png
 vendor/bin/zstd -19 backup.sql -o backup.sql.zst
 vendor/bin/zstd -d backup.sql.zst
+vendor/bin/vips thumbnail input.jpg output.jpg 300
+vendor/bin/vips copy input.png output.webp
+vendor/bin/vipsthumbnail input.jpg -s 300x -o thumb.jpg
 ```
 
 > **Note:** These are statically compiled Linux arm64 (musl) binaries. They will work on Laravel Cloud and other Linux arm64 environments but **not** on macOS, Windows, or x86-64 Linux.
@@ -184,6 +210,8 @@ make bin/ffmpeg
 make bin/ffprobe
 make bin/magick
 make bin/zstd
+make bin/vips
+make bin/vipsthumbnail
 ```
 
 ### Parallel builds
