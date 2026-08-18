@@ -1,4 +1,17 @@
+<p align="center">
+    <img src="https://raw.githubusercontent.com/mathiasgrimm/laravel-cloud-binaries/main/art/banner.png" alt="Laravel Cloud Binaries" width="100%">
+</p>
+
 # Laravel Cloud Binaries
+
+> Pre-built static binaries for Laravel Cloud. Ready in `vendor/bin`, no system packages required.
+
+<p align="left">
+    <a href="https://packagist.org/packages/mathiasgrimm/laravel-cloud-binaries"><img src="https://img.shields.io/packagist/v/mathiasgrimm/laravel-cloud-binaries.svg?style=flat-square" alt="Latest Version on Packagist"></a>
+    <a href="https://github.com/mathiasgrimm/laravel-cloud-binaries/actions/workflows/test.yml"><img src="https://img.shields.io/github/actions/workflow/status/mathiasgrimm/laravel-cloud-binaries/test.yml?branch=main&label=tests&style=flat-square" alt="Tests"></a>
+    <a href="https://packagist.org/packages/mathiasgrimm/laravel-cloud-binaries"><img src="https://img.shields.io/packagist/dt/mathiasgrimm/laravel-cloud-binaries.svg?style=flat-square" alt="Total Downloads"></a>
+    <a href="THIRD-PARTY-NOTICES.md"><img src="https://img.shields.io/badge/license-MIT%20%2B%20GPL-blue.svg?style=flat-square" alt="License"></a>
+</p>
 
 > [!NOTE]
 > This is an independent, community package. It is not an official or
