@@ -1,6 +1,6 @@
 # Laravel Cloud Binaries
 
-Pre-built, statically compiled binaries for Linux (amd64/musl). Designed to be installed as a Composer package so that `vendor/bin/` contains ready-to-use tools on Laravel Cloud (or any Linux environment).
+Pre-built, statically compiled binaries for Linux (arm64/musl). Designed to be installed as a Composer package so that `vendor/bin/` contains ready-to-use tools on Laravel Cloud (or any Linux arm64 environment).
 
 This package includes all the binaries required by [spatie/image-optimizer](https://github.com/spatie/image-optimizer), making it a drop-in solution for image optimization on environments where system packages are not available. Note that [svgo](https://github.com/svg/svgo) is not included as it is a regular npm package and can be installed via `npm install -g svgo`.
 
@@ -19,8 +19,9 @@ This package includes all the binaries required by [spatie/image-optimizer](http
 | `ffmpeg` | Audio/video transcoding |
 | `ffprobe` | Media stream analysis |
 | `magick` | ImageMagick 7 (replaces convert/identify/mogrify) |
+| `zstd` | Zstandard compression/decompression |
 
-All binaries are statically linked against musl libc (Alpine Linux). They will **not** run on macOS — this is expected.
+All binaries are statically linked against musl libc (Alpine Linux) and built for **arm64** (aarch64). They will **not** run on macOS, nor on x86-64 (amd64) Linux hosts — this is expected.
 
 ## Pinned versions
 
@@ -39,7 +40,8 @@ All upstream versions are defined at the top of the `Makefile` and passed to eac
 | ffmpeg | `FFMPEG_VERSION` | `n7.1.1` | 29 MB |
 | ffprobe | `FFMPEG_VERSION` | `n7.1.1` | 29 MB |
 | magick | `IMAGEMAGICK_VERSION` | `7.1.1-43` | 12 MB |
-| **Total** | | | **93 MB** |
+| zstd | `ZSTD_VERSION` | `v1.5.7` | 2.0 MB |
+| **Total** | | | **95 MB** |
 
 ## Installation
 
@@ -47,11 +49,11 @@ All upstream versions are defined at the top of the `Makefile` and passed to eac
 composer require mathiasgrimm/laravel-cloud-binaries
 ```
 
-Composer will symlink all 11 binaries into `vendor/bin/`.
+Composer will symlink all 12 binaries into `vendor/bin/`.
 
 ## Selective installation (faster deploys)
 
-If you only need a few binaries, you can install the package as a dev dependency, copy just the ones you need into your repository, and avoid downloading the full ~93 MB on every deploy:
+If you only need a few binaries, you can install the package as a dev dependency, copy just the ones you need into your repository, and avoid downloading the full ~95 MB on every deploy:
 
 ```bash
 composer require --dev mathiasgrimm/laravel-cloud-binaries
@@ -102,9 +104,11 @@ vendor/bin/gifsicle -O3 animation.gif -o optimized.gif
 vendor/bin/ffmpeg -i input.mp4 -c:v libx264 output.mp4
 vendor/bin/ffprobe -v quiet -print_format json -show_format input.mp4
 vendor/bin/magick input.png -resize 50% output.png
+vendor/bin/zstd -19 backup.sql -o backup.sql.zst
+vendor/bin/zstd -d backup.sql.zst
 ```
 
-> **Note:** These are statically compiled Linux (musl) binaries. They will work on Laravel Cloud and other Linux environments but **not** on macOS or Windows.
+> **Note:** These are statically compiled Linux arm64 (musl) binaries. They will work on Laravel Cloud and other Linux arm64 environments but **not** on macOS, Windows, or x86-64 Linux.
 
 ## Building from source
 
@@ -121,6 +125,8 @@ make
 
 Binaries are output to the `bin/` directory.
 
+Each Dockerfile builds for the host architecture, so run the build on an arm64 machine (Apple Silicon, or any aarch64 Linux host) to match the architecture of the committed binaries. Builds are not byte-for-byte reproducible — the Dockerfiles track `alpine:latest` and unpinned apk packages, so only the upstream tool version is pinned. To build for a different architecture, pass `--platform` through Docker — e.g. `docker build --platform linux/amd64 ...` — bearing in mind that emulated builds are considerably slower.
+
 ### Build a single binary
 
 ```bash
@@ -135,6 +141,7 @@ make bin/gifsicle
 make bin/ffmpeg
 make bin/ffprobe
 make bin/magick
+make bin/zstd
 ```
 
 ### Parallel builds
