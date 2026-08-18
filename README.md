@@ -167,6 +167,24 @@ make clean-images   # remove Docker images
 make clean-all      # both
 ```
 
+## Licensing
+
+The MIT license in `LICENSE` covers only this repository's build scripts and
+documentation. The binaries in `bin/` are built from third-party projects and keep
+their own licenses — **`jpegoptim`, `pngquant`, `gifsicle`, `ffmpeg`, and `ffprobe` are
+GPL**. `ffmpeg`/`ffprobe` are built with `--enable-gpl`, `--enable-libx264`, and
+`--enable-libx265`, which per FFmpeg's own `LICENSE.md` changes its license from
+LGPL-2.1+ to GPL-2.0+.
+
+If you are only *using* these binaries in your own application, the GPL imposes no
+obligations on you — running a program is not distribution. If you **redistribute**
+them, whether directly or bundled into a product you ship, read
+[`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md) first. It lists the license for
+every binary and its statically linked components, and includes the
+corresponding-source offer.
+
+Full license texts are in [`licenses/`](licenses/).
+
 ## How it works
 
 Each tool has its own Dockerfile under `<tool>/Dockerfile`. The Dockerfiles use multi-stage Alpine builds:

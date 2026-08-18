@@ -4,15 +4,10 @@ bin/* binary
 # Exclude from Composer archive
 /.github        export-ignore
 /.idea          export-ignore
-/jpegoptim      export-ignore
-/optipng        export-ignore
-/pngquant       export-ignore
-/cwebp          export-ignore
-/avifenc        export-ignore
-/gifsicle       export-ignore
-/ffmpeg         export-ignore
-/imagemagick    export-ignore
-/zstd           export-ignore
-Makefile        export-ignore
 .gitattributes  export-ignore
 .gitignore      export-ignore
+
+# NOTE: the Makefile and the per-tool Dockerfiles are deliberately NOT
+# export-ignored. Together they are the scripts used to control compilation of
+# the GPL-licensed binaries in bin/, and so form part of the corresponding
+# source that must accompany them. They add a few KB to the archive.
