@@ -14,6 +14,9 @@ RUN wget -O optipng.tar.gz "https://sourceforge.net/projects/optipng/files/OptiP
     ./configure --with-system-libpng --with-system-zlib && \
     make LDFLAGS="-static" -j$(nproc)
 
+# Strip symbol tables -- these are shipped artifacts, not debugging targets
+RUN strip /optipng-${VERSION}/src/optipng/optipng
+
 # Verify static
 RUN file /optipng-${VERSION}/src/optipng/optipng && \
     file /optipng-${VERSION}/src/optipng/optipng | grep -qv "dynamically linked" && \

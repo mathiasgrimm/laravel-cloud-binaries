@@ -23,18 +23,16 @@ WORKDIR /src/qpdf
 #
 # MinSizeRel is -Os. Passing -Os via CMAKE_<LANG>_FLAGS would not work: cmake
 # appends the per-config flags last, so Release's -O3 would win.
-#
-# strip is a deliberate deviation from the other Dockerfiles here -- none of
-# them strip. It cuts ~40% (5.5 MB -> 3.3 MB) and qpdf has no plugin ABI that
-# needs the symbols.
 RUN cmake -B build \
       -DCMAKE_BUILD_TYPE=MinSizeRel \
       -DBUILD_SHARED_LIBS=OFF \
       -DUSE_IMPLICIT_CRYPTO=OFF \
       -DREQUIRE_CRYPTO_NATIVE=ON \
       -DCMAKE_EXE_LINKER_FLAGS="-static" && \
-    cmake --build build --target qpdf -j$(nproc) && \
-    strip build/qpdf/qpdf
+    cmake --build build --target qpdf -j$(nproc)
+
+# Strip symbol tables -- these are shipped artifacts, not debugging targets
+RUN strip /src/qpdf/build/qpdf/qpdf
 
 # Verify static
 RUN file /src/qpdf/build/qpdf/qpdf && \

@@ -19,6 +19,9 @@ RUN make -C programs -j$(nproc) zstd \
       HAVE_ZLIB=1 HAVE_LZMA=1 HAVE_LZ4=1 \
       LDFLAGS="-static"
 
+# Strip symbol tables -- these are shipped artifacts, not debugging targets
+RUN strip /src/zstd/programs/zstd
+
 # Verify static
 RUN file /src/zstd/programs/zstd && \
     file /src/zstd/programs/zstd | grep -qv "dynamically linked" && \

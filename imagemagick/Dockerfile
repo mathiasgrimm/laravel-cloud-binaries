@@ -62,6 +62,9 @@ RUN ./configure \
       CFLAGS="-Os" CXXFLAGS="-Os" && \
     make -j$(nproc) LDFLAGS="-all-static" LIBS="-lsharpyuv -lbrotlidec -lbrotlicommon"
 
+# Strip symbol tables -- these are shipped artifacts, not debugging targets
+RUN strip /src/imagemagick/utilities/magick
+
 # Verify static
 RUN file /src/imagemagick/utilities/magick && \
     file /src/imagemagick/utilities/magick | grep -qv "dynamically linked" && \

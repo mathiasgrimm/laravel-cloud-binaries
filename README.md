@@ -51,20 +51,20 @@ All upstream versions are defined at the top of the `Makefile` and passed to eac
 
 | Binary | Variable | Current version | Size |
 |--------|----------|-----------------|------|
-| jpegoptim | `JPEGOPTIM_VERSION` | `v1.5.6` | 1.0 MB |
-| optipng | `OPTIPNG_VERSION` | `0.7.8` | 797 KB |
-| pngquant | `PNGQUANT_VERSION` | `3.0.3` | 1.3 MB |
-| cwebp | `LIBWEBP_VERSION` | `v1.5.0` | 1.6 MB |
-| dwebp | `LIBWEBP_VERSION` | `v1.5.0` | 1.3 MB |
-| avifenc | `LIBAVIF_VERSION` | `v1.2.1` | 7.8 MB |
-| avifdec | `LIBAVIF_VERSION` | `v1.2.1` | 7.7 MB |
-| gifsicle | `GIFSICLE_VERSION` | `v1.96` | 1.3 MB |
+| jpegoptim | `JPEGOPTIM_VERSION` | `v1.5.6` | 642 KB |
+| optipng | `OPTIPNG_VERSION` | `0.7.8` | 386 KB |
+| pngquant | `PNGQUANT_VERSION` | `3.0.3` | 1.1 MB |
+| cwebp | `LIBWEBP_VERSION` | `v1.5.0` | 1.1 MB |
+| dwebp | `LIBWEBP_VERSION` | `v1.5.0` | 834 KB |
+| avifenc | `LIBAVIF_VERSION` | `v1.2.1` | 6.8 MB |
+| avifdec | `LIBAVIF_VERSION` | `v1.2.1` | 6.7 MB |
+| gifsicle | `GIFSICLE_VERSION` | `v1.96` | 323 KB |
 | ffmpeg | `FFMPEG_VERSION` | `n7.1.1` | 29 MB |
 | ffprobe | `FFMPEG_VERSION` | `n7.1.1` | 29 MB |
-| magick | `IMAGEMAGICK_VERSION` | `7.1.1-43` | 12 MB |
-| zstd | `ZSTD_VERSION` | `v1.5.7` | 2.0 MB |
+| magick | `IMAGEMAGICK_VERSION` | `7.1.1-43` | 7.8 MB |
+| zstd | `ZSTD_VERSION` | `v1.5.7` | 1.5 MB |
 | qpdf | `QPDF_VERSION` | `v12.4.0` | 3.3 MB |
-| **Total** | | | **98 MB** |
+| **Total** | | | **88 MB** |
 
 ## Installation
 
@@ -76,7 +76,7 @@ Composer will symlink all 13 binaries into `vendor/bin/`.
 
 ## Selective installation (faster deploys)
 
-If you only need a few binaries, you can install the package as a dev dependency, copy just the ones you need into your repository, and avoid downloading the full ~98 MB on every deploy:
+If you only need a few binaries, you can install the package as a dev dependency, copy just the ones you need into your repository, and avoid downloading the full ~88 MB on every deploy:
 
 ```bash
 composer require --dev mathiasgrimm/laravel-cloud-binaries
@@ -116,7 +116,7 @@ After every `composer update`, the selected binaries are copied into `bin/` auto
 This package runs optimization on your own infrastructure, which is the right
 trade-off when you want no external dependency and no per-image cost.
 
-If you would rather not ship ~98 MB of executables, [Glimpse](https://glimpseimg.com)
+If you would rather not ship ~88 MB of executables, [Glimpse](https://glimpseimg.com)
 does the same kind of work — optimize, convert, resize, thumbnail — over an HTTP
 API, with a CLI and a PHP SDK and nothing to compile:
 
@@ -244,7 +244,7 @@ Full license texts are in [`licenses/`](licenses/).
 
 Each tool has its own Dockerfile under `<tool>/Dockerfile`. The Dockerfiles use multi-stage Alpine builds:
 
-1. **Builder stage** — installs dependencies, clones source, compiles with static linking flags
+1. **Builder stage** — installs dependencies, clones source, compiles with static linking flags, then strips symbol tables (these are shipped artifacts, not debugging targets)
 2. **Final stage** — `FROM scratch`, copies only the static binary
 
 The Makefile orchestrates building the Docker images and extracting the binaries into `bin/`.

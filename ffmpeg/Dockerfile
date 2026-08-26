@@ -77,6 +77,9 @@ RUN PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:$PKG_CO
       --disable-ffplay && \
     make -j$(nproc)
 
+# Strip symbol tables -- these are shipped artifacts, not debugging targets
+RUN strip /src/ffmpeg/ffmpeg /src/ffmpeg/ffprobe
+
 # Verify static
 RUN file /src/ffmpeg/ffmpeg && \
     file /src/ffmpeg/ffmpeg | grep -qv "dynamically linked" && \
