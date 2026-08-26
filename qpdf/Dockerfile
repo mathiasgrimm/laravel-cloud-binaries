@@ -17,8 +17,9 @@ WORKDIR /src/qpdf
 
 # USE_IMPLICIT_CRYPTO=OFF + REQUIRE_CRYPTO_NATIVE=ON keeps encryption support
 # without linking gnutls or openssl. Note that the native provider compiles in
-# an RSA-MD licensed MD5 implementation, which carries an attribution
-# requirement -- see THIRD-PARTY-NOTICES.md.
+# code derived from the RSA Data Security, Inc. MD5 Message-Digest Algorithm,
+# whose license requires that identification wherever the derived work is
+# referenced -- see THIRD-PARTY-NOTICES.md and licenses/RSA-MD.txt.
 #
 # MinSizeRel is -Os. Passing -Os via CMAKE_<LANG>_FLAGS would not work: cmake
 # appends the per-config flags last, so Release's -O3 would win.

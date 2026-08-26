@@ -78,11 +78,12 @@ of this documentation and/or software". The complete notice — both grants, the
 line, and the warranty disclaimer — is reproduced at
 [`licenses/RSA-MD.txt`](licenses/RSA-MD.txt).
 
-qpdf can optionally delegate encryption to GnuTLS (`LGPL-2.1-or-later`) or OpenSSL
-(`Apache-2.0`), neither of which compiles `MD5_native.cc`. This build uses neither — it
-is configured with `-DUSE_IMPLICIT_CRYPTO=OFF -DREQUIRE_CRYPTO_NATIVE=ON`, which keeps
-full AES-256 support without statically linking an LGPL library. The trade is the
-RSA-MD attribution above.
+qpdf can optionally delegate encryption to GnuTLS (`LGPL-2.1-or-later`) or OpenSSL —
+`Apache-2.0` from OpenSSL 3.0 onward, but qpdf accepts `openssl >= 1.1.0`, and those
+older releases are under the OpenSSL and SSLeay licenses instead. Neither provider
+compiles `MD5_native.cc`. This build uses neither: it is configured with
+`-DUSE_IMPLICIT_CRYPTO=OFF -DREQUIRE_CRYPTO_NATIVE=ON`, which keeps full AES-256 support
+without statically linking an LGPL library. The trade is the RSA-MD attribution above.
 
 ## Statically linked components
 
