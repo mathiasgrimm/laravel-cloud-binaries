@@ -36,6 +36,9 @@ RUN mkdir build && cd build && \
       -DWEBP_BUILD_EXTRAS=OFF && \
     make -j$(nproc)
 
+# Strip symbol tables -- these are shipped artifacts, not debugging targets
+RUN strip /src/libwebp/build/cwebp /src/libwebp/build/dwebp
+
 # Verify static
 RUN file /src/libwebp/build/cwebp && \
     file /src/libwebp/build/cwebp | grep -qv "dynamically linked" && \

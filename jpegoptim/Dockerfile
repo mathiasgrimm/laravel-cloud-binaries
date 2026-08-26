@@ -19,6 +19,9 @@ RUN mkdir build && cd build && \
     ln -snf lib64 mozjpeg/lib && \
     make -j$(nproc)
 
+# Strip symbol tables -- these are shipped artifacts, not debugging targets
+RUN strip /src/jpegoptim/build/jpegoptim
+
 # Verify static
 RUN file /src/jpegoptim/build/jpegoptim && \
     file /src/jpegoptim/build/jpegoptim | grep -qv "dynamically linked" && \

@@ -15,6 +15,9 @@ RUN autoreconf -i && \
     ./configure --disable-gifview && \
     make LDFLAGS="-static" -j$(nproc)
 
+# Strip symbol tables -- these are shipped artifacts, not debugging targets
+RUN strip /src/gifsicle/src/gifsicle
+
 # Verify static
 RUN file /src/gifsicle/src/gifsicle && \
     file /src/gifsicle/src/gifsicle | grep -qv "dynamically linked" && \

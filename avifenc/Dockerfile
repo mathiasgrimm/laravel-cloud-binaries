@@ -32,6 +32,9 @@ RUN rm -f /usr/lib/libaom.so* /usr/lib/libpng*.so* /usr/lib/libjpeg*.so* /usr/li
       -DZLIB_INCLUDE_DIR=/usr/include && \
     make -j$(nproc)
 
+# Strip symbol tables -- these are shipped artifacts, not debugging targets
+RUN strip /src/libavif/build/avifenc /src/libavif/build/avifdec
+
 # Verify static
 RUN file /src/libavif/build/avifenc && \
     file /src/libavif/build/avifdec && \

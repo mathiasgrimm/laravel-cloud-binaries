@@ -129,6 +129,11 @@ test-only:
 		/opt/bin/magick -version && \
 		/opt/bin/zstd --version && \
 		/opt/bin/qpdf --version && \
+		apk add --no-cache file >/dev/null 2>&1 && \
+		if file /opt/bin/* | grep "not stripped"; then \
+			echo "ERROR: the binaries listed above are not stripped"; exit 1; \
+		fi && \
+		echo "All binaries stripped" && \
 		echo "All binaries OK" \
 	'
 

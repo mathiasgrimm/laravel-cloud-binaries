@@ -20,6 +20,9 @@ WORKDIR /src/pngquant
 ENV RUSTFLAGS="-C target-feature=+crt-static"
 RUN cargo build --release
 
+# Strip symbol tables -- these are shipped artifacts, not debugging targets
+RUN strip /src/pngquant/target/release/pngquant
+
 # Verify static
 RUN file /src/pngquant/target/release/pngquant && \
     file /src/pngquant/target/release/pngquant | grep -qv "dynamically linked" && \
