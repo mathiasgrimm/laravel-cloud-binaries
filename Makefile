@@ -8,9 +8,10 @@ GIFSICLE_VERSION     := v1.96
 FFMPEG_VERSION       := n7.1.1
 IMAGEMAGICK_VERSION  := 7.1.1-43
 ZSTD_VERSION         := v1.5.7
+QPDF_VERSION         := v12.4.0
 # ────────────────────────────────────────────────────────────
 
-BINARIES := bin/jpegoptim bin/optipng bin/pngquant bin/cwebp bin/dwebp bin/avifenc bin/avifdec bin/gifsicle bin/ffmpeg bin/ffprobe bin/magick bin/zstd
+BINARIES := bin/jpegoptim bin/optipng bin/pngquant bin/cwebp bin/dwebp bin/avifenc bin/avifdec bin/gifsicle bin/ffmpeg bin/ffprobe bin/magick bin/zstd bin/qpdf
 
 .PHONY: all test test-only clean clean-images clean-all
 
@@ -100,6 +101,15 @@ bin/zstd: zstd/Dockerfile
 	docker cp tmp-zstd:/zstd bin/zstd
 	docker rm tmp-zstd
 
+# --- qpdf ---
+bin/qpdf: qpdf/Dockerfile
+	mkdir -p bin
+	docker build --build-arg VERSION=$(QPDF_VERSION) -t qpdf ./qpdf
+	docker rm -f tmp-qpdf 2>/dev/null || true
+	docker create --name tmp-qpdf qpdf /true
+	docker cp tmp-qpdf:/qpdf bin/qpdf
+	docker rm tmp-qpdf
+
 # --- Test ---
 test: $(BINARIES) test-only
 
@@ -118,6 +128,7 @@ test-only:
 		/opt/bin/ffprobe -version && \
 		/opt/bin/magick -version && \
 		/opt/bin/zstd --version && \
+		/opt/bin/qpdf --version && \
 		echo "All binaries OK" \
 	'
 
@@ -126,6 +137,6 @@ clean:
 	find bin -mindepth 1 ! -name .gitkeep -delete
 
 clean-images:
-	docker rmi -f jpegoptim optipng pngquant cwebp avifenc gifsicle ffmpeg imagemagick zstd 2>/dev/null || true
+	docker rmi -f jpegoptim optipng pngquant cwebp avifenc gifsicle ffmpeg imagemagick zstd qpdf 2>/dev/null || true
 
 clean-all: clean clean-images

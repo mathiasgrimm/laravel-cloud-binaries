@@ -23,6 +23,7 @@ corresponding source available. See [Source code](#source-code) below.
 | `ffmpeg`, `ffprobe` | [FFmpeg](https://github.com/FFmpeg/FFmpeg) | `n7.1.1` | `GPL-2.0-or-later` | [GPL-2.0.txt](licenses/GPL-2.0.txt) |
 | `magick` | [ImageMagick](https://github.com/ImageMagick/ImageMagick) | `7.1.1-43` | `ImageMagick` | [imagemagick.txt](licenses/imagemagick.txt) |
 | `zstd` | [facebook/zstd](https://github.com/facebook/zstd) | `v1.5.7` | `BSD-3-Clause` | [zstd.txt](licenses/zstd.txt) |
+| `qpdf` | [qpdf/qpdf](https://github.com/qpdf/qpdf) | `v12.4.0` | `Apache-2.0` | [Apache-2.0.txt](licenses/Apache-2.0.txt) |
 
 ### Why ffmpeg and ffprobe are GPL, not LGPL
 
@@ -40,6 +41,24 @@ offer the "or later" option, the practical effect for the combined `ffmpeg` and
 `ffprobe` binaries shipped here is GPL-2.0. Commercial licenses for x264 and x265 are
 available from their respective vendors if you need to avoid the GPL.
 
+### qpdf is Apache-2.0, and carries a NOTICE
+
+`qpdf` is the only binary here under the Apache License 2.0, and it is not copyleft:
+nothing in its static link closure is GPL or LGPL, so it is **not** covered by the
+corresponding-source offer below.
+
+It does carry one obligation of its own. Apache-2.0 section 4(d) requires anyone
+redistributing a work that includes a `NOTICE` file to pass that file's attribution
+text along. qpdf ships one, and it is reproduced verbatim at
+[`licenses/qpdf-NOTICE.txt`](licenses/qpdf-NOTICE.txt). It covers qpdf's own copyright
+plus the two third-party pieces embedded in its crypto provider: Philip J. Erdelsky's
+public-domain Rijndael implementation, and the sha2 code from sphlib (`MIT`).
+
+qpdf can optionally delegate encryption to GnuTLS (`LGPL-2.1-or-later`) or OpenSSL
+(`Apache-2.0`). This build does neither — it is configured with
+`-DUSE_IMPLICIT_CRYPTO=OFF -DREQUIRE_CRYPTO_NATIVE=ON`, which keeps full AES-256
+support using qpdf's own implementation and avoids statically linking an LGPL library.
+
 ## Statically linked components
 
 All binaries are statically linked, so each one also contains code from its
@@ -56,6 +75,7 @@ dependencies. The notable ones, by binary:
 | `ffmpeg`, `ffprobe` | x264 (`GPL-2.0-or-later`), x265 `4.1` (`GPL-2.0`), libvpx `v1.15.0` (`BSD-3-Clause`), Opus `v1.5.2` (`BSD-3-Clause`), LAME (`LGPL-2.1-or-later`), FreeType (`FTL OR GPL-2.0-or-later`), libpng, zlib, bzip2 (`bzip2-1.0.6`), Brotli (`MIT`) |
 | `magick` | libjpeg-turbo, libpng, libwebp, FreeType, libxml2 (`MIT`), libtiff `v4.7.0`, zlib, xz/liblzma (`0BSD`), bzip2, Brotli |
 | `zstd` | zlib, xz/liblzma, LZ4 (`BSD-2-Clause`) |
+| `qpdf` | zlib, libjpeg-turbo, and qpdf's built-in crypto provider: Rijndael/AES (public domain), sha2 from sphlib (`MIT`) |
 
 Unversioned components above are the Alpine Linux packages current at build time; the
 `alpine:latest` base image and its `apk` packages are not pinned, so exact versions
