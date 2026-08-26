@@ -45,8 +45,9 @@ available from their respective vendors if you need to avoid the GPL.
 
 `qpdf` is the only binary here under the Apache License 2.0. Nothing in its static link
 closure carries a copyleft obligation: zlib, libjpeg-turbo and musl are permissive, and
-libstdc++/libgcc are `GPL-3.0-or-later WITH GCC-exception-3.1`, whose Runtime Library
-Exception expressly permits conveying the compiled result under any license. `qpdf` is
+libstdc++ and libgcc are `GPL-3.0-or-later WITH GCC-exception-3.1`, whose Runtime Library
+Exception permits conveying the combination "under terms of your choice, consistent with
+the licensing of the Independent Modules" — here Apache-2.0 and permissive. `qpdf` is
 therefore **not** covered by the corresponding-source offer below.
 
 It does carry obligations of its own. Apache-2.0 section 4(d) requires anyone
@@ -96,10 +97,13 @@ dependencies. The notable ones, by binary:
 | `zstd` | zlib, xz/liblzma, LZ4 (`BSD-2-Clause`) |
 | `qpdf` | zlib, libjpeg-turbo, and qpdf's built-in crypto provider: Rijndael/AES (public domain), sha2 from sphlib (`MIT`), MD5 derived from the RSA Data Security, Inc. MD5 Message-Digest Algorithm (`RSA-MD`) |
 
-The C++ binaries (`magick`, `qpdf`) additionally contain libstdc++ and libgcc, which are
-`GPL-3.0-or-later WITH GCC-exception-3.1`. The GCC Runtime Library Exception expressly
-permits conveying the compiled work under any license, so their presence imposes no
-copyleft obligation on either binary.
+Every binary above also contains libgcc, and `qpdf`, `ffmpeg` and `ffprobe` additionally
+contain libstdc++ — qpdf is C++, and ffmpeg/ffprobe pull it in through x265. (`magick` is
+C and contains neither libstdc++ nor any other C++ runtime.) Both libraries are
+`GPL-3.0-or-later WITH GCC-exception-3.1`. The GCC Runtime Library Exception permits
+conveying such a combination "under terms of your choice, consistent with the licensing of
+the Independent Modules", so their presence adds no copyleft obligation of its own —
+`ffmpeg` and `ffprobe` are GPL for unrelated reasons, via x264 and x265.
 
 Unversioned components above are the Alpine Linux packages current at build time; the
 `alpine:latest` base image and its `apk` packages are not pinned, so exact versions
