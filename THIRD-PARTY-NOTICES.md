@@ -103,9 +103,11 @@ dependencies. The notable ones, by binary:
 | `zstd` | zlib, xz/liblzma, LZ4 (`BSD-2-Clause`) |
 | `qpdf` | zlib, libjpeg-turbo, and qpdf's built-in crypto provider: Rijndael/AES (public domain), sha2 from sphlib (`MIT`), MD5 derived from the RSA Data Security, Inc. MD5 Message-Digest Algorithm (`RSA-MD`) |
 
-Every binary above also contains libgcc, and `qpdf`, `ffmpeg` and `ffprobe` additionally
-contain libstdc++ — qpdf is C++, and ffmpeg/ffprobe pull it in through x265. (`magick` is
-C and contains neither libstdc++ nor any other C++ runtime.) Both libraries are
+Every gcc-built binary above also contains libgcc, and `qpdf`, `ffmpeg` and `ffprobe`
+additionally contain libstdc++ — qpdf is C++, and ffmpeg/ffprobe pull it in through x265.
+(`magick` is C and contains neither libstdc++ nor any other C++ runtime. `pngquant` is
+built with Rust rather than gcc, so it carries the `compiler_builtins` crate
+— `Apache-2.0 OR MIT` — in place of libgcc.) Both GCC libraries are
 `GPL-3.0-or-later WITH GCC-exception-3.1`. The GCC Runtime Library Exception permits
 conveying such a combination "under terms of your choice, consistent with the licensing of
 the Independent Modules", so their presence adds no copyleft obligation of its own —
