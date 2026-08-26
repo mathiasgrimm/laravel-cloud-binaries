@@ -23,7 +23,7 @@ corresponding source available. See [Source code](#source-code) below.
 | `ffmpeg`, `ffprobe` | [FFmpeg](https://github.com/FFmpeg/FFmpeg) | `n7.1.1` | `GPL-2.0-or-later` | [GPL-2.0.txt](licenses/GPL-2.0.txt) |
 | `magick` | [ImageMagick](https://github.com/ImageMagick/ImageMagick) | `7.1.1-43` | `ImageMagick` | [imagemagick.txt](licenses/imagemagick.txt) |
 | `zstd` | [facebook/zstd](https://github.com/facebook/zstd) | `v1.5.7` | `BSD-3-Clause` | [zstd.txt](licenses/zstd.txt) |
-| `qpdf` | [qpdf/qpdf](https://github.com/qpdf/qpdf) | `v12.4.0` | `Apache-2.0` | [Apache-2.0.txt](licenses/Apache-2.0.txt) |
+| `qpdf` | [qpdf/qpdf](https://github.com/qpdf/qpdf) | `v12.4.0` | `Apache-2.0` | [Apache-2.0.txt](licenses/Apache-2.0.txt), [RSA-MD.txt](licenses/RSA-MD.txt) |
 
 ### Why ffmpeg and ffprobe are GPL, not LGPL
 
@@ -59,19 +59,24 @@ harness and is not part of the shipped binary), and the Rijndael and sha2 code d
 below.
 
 **One required attribution is absent from that NOTICE.** qpdf's native crypto provider
-also compiles `libqpdf/MD5_native.cc`, which is derived from the RSA Data Security, Inc.
-MD5 Message-Digest Algorithm and licensed under `RSA-MD`. That license grants permission
-only "provided that it is identified as the 'RSA Data Security, Inc. MD5 Message-Digest
-Algorithm' in all material mentioning or referencing this software", and requires the
-notice to be retained in any copies. Upstream's `NOTICE.md` does not mention it, so
-reproducing the NOTICE alone does not discharge the requirement. Accordingly:
+also compiles `libqpdf/MD5_native.cc`, which states that it "is derived from the reference
+algorithm for MD5 as given in RFC 1321" and is licensed under `RSA-MD`. Because it is a
+derivative work, the operative clause is the second of that license's two grants:
 
-> `bin/qpdf` contains a derivative of the RSA Data Security, Inc. MD5 Message-Digest
-> Algorithm. Copyright (C) 1991-2, RSA Data Security, Inc. Created 1991. All rights
-> reserved. RSA Data Security, Inc. makes no representations concerning either the
-> merchantability of this software or the suitability of this software for any
-> particular purpose. It is provided "as is" without express or implied warranty of any
-> kind.
+> License is also granted to make and use derivative works provided that such works are
+> identified as "derived from the RSA Data Security, Inc. MD5 Message-Digest Algorithm" in
+> all material mentioning or referencing the derived work.
+
+Upstream's `NOTICE.md` does not mention this component, so reproducing the NOTICE alone
+does not discharge the requirement. Accordingly, and using the license's own words:
+
+> `bin/qpdf` contains code derived from the RSA Data Security, Inc. MD5 Message-Digest
+> Algorithm.
+
+`RSA-MD` further requires that "these notices must be retained in any copies of any part
+of this documentation and/or software". The complete notice — both grants, the copyright
+line, and the warranty disclaimer — is reproduced at
+[`licenses/RSA-MD.txt`](licenses/RSA-MD.txt).
 
 qpdf can optionally delegate encryption to GnuTLS (`LGPL-2.1-or-later`) or OpenSSL
 (`Apache-2.0`), neither of which compiles `MD5_native.cc`. This build uses neither — it

@@ -24,7 +24,8 @@ WORKDIR /src/qpdf
 # appends the per-config flags last, so Release's -O3 would win.
 #
 # strip is a deliberate deviation from the other Dockerfiles here -- none of
-# them strip. It halves this binary and qpdf has no plugin ABI needing symbols.
+# them strip. It cuts ~40% (5.5 MB -> 3.3 MB) and qpdf has no plugin ABI that
+# needs the symbols.
 RUN cmake -B build \
       -DCMAKE_BUILD_TYPE=MinSizeRel \
       -DBUILD_SHARED_LIBS=OFF \
