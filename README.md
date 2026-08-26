@@ -10,7 +10,7 @@
     <a href="https://packagist.org/packages/mathiasgrimm/laravel-cloud-binaries"><img src="https://img.shields.io/packagist/v/mathiasgrimm/laravel-cloud-binaries.svg?style=flat-square" alt="Latest Version on Packagist"></a>
     <a href="https://github.com/mathiasgrimm/laravel-cloud-binaries/actions/workflows/test.yml"><img src="https://img.shields.io/github/actions/workflow/status/mathiasgrimm/laravel-cloud-binaries/test.yml?branch=main&label=tests&style=flat-square" alt="Tests"></a>
     <a href="https://packagist.org/packages/mathiasgrimm/laravel-cloud-binaries"><img src="https://img.shields.io/packagist/dt/mathiasgrimm/laravel-cloud-binaries.svg?style=flat-square" alt="Total Downloads"></a>
-    <a href="THIRD-PARTY-NOTICES.md"><img src="https://img.shields.io/badge/license-MIT%20%2B%20GPL-blue.svg?style=flat-square" alt="License"></a>
+    <a href="THIRD-PARTY-NOTICES.md"><img src="https://img.shields.io/badge/license-MIT%20%2B%20GPL%20%2B%20others-blue.svg?style=flat-square" alt="License"></a>
 </p>
 
 > [!NOTE]
@@ -63,8 +63,8 @@ All upstream versions are defined at the top of the `Makefile` and passed to eac
 | ffprobe | `FFMPEG_VERSION` | `n7.1.1` | 29 MB |
 | magick | `IMAGEMAGICK_VERSION` | `7.1.1-43` | 12 MB |
 | zstd | `ZSTD_VERSION` | `v1.5.7` | 2.0 MB |
-| qpdf | `QPDF_VERSION` | `v12.4.0` | 4.4 MB |
-| **Total** | | | **99 MB** |
+| qpdf | `QPDF_VERSION` | `v12.4.0` | 3.3 MB |
+| **Total** | | | **98 MB** |
 
 ## Installation
 
@@ -76,7 +76,7 @@ Composer will symlink all 13 binaries into `vendor/bin/`.
 
 ## Selective installation (faster deploys)
 
-If you only need a few binaries, you can install the package as a dev dependency, copy just the ones you need into your repository, and avoid downloading the full ~99 MB on every deploy:
+If you only need a few binaries, you can install the package as a dev dependency, copy just the ones you need into your repository, and avoid downloading the full ~98 MB on every deploy:
 
 ```bash
 composer require --dev mathiasgrimm/laravel-cloud-binaries
@@ -116,7 +116,7 @@ After every `composer update`, the selected binaries are copied into `bin/` auto
 This package runs optimization on your own infrastructure, which is the right
 trade-off when you want no external dependency and no per-image cost.
 
-If you would rather not ship ~99 MB of executables, [Glimpse](https://glimpseimg.com)
+If you would rather not ship ~98 MB of executables, [Glimpse](https://glimpseimg.com)
 does the same kind of work — optimize, convert, resize, thumbnail — over an HTTP
 API, with a CLI and a PHP SDK and nothing to compile:
 

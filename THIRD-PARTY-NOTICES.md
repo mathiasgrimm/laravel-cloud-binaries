@@ -43,21 +43,40 @@ available from their respective vendors if you need to avoid the GPL.
 
 ### qpdf is Apache-2.0, and carries a NOTICE
 
-`qpdf` is the only binary here under the Apache License 2.0, and it is not copyleft:
-nothing in its static link closure is GPL or LGPL, so it is **not** covered by the
-corresponding-source offer below.
+`qpdf` is the only binary here under the Apache License 2.0. Nothing in its static link
+closure carries a copyleft obligation: zlib, libjpeg-turbo and musl are permissive, and
+libstdc++/libgcc are `GPL-3.0-or-later WITH GCC-exception-3.1`, whose Runtime Library
+Exception expressly permits conveying the compiled result under any license. `qpdf` is
+therefore **not** covered by the corresponding-source offer below.
 
-It does carry one obligation of its own. Apache-2.0 section 4(d) requires anyone
-redistributing a work that includes a `NOTICE` file to pass that file's attribution
-text along. qpdf ships one, and it is reproduced verbatim at
-[`licenses/qpdf-NOTICE.txt`](licenses/qpdf-NOTICE.txt). It covers qpdf's own copyright
-plus the two third-party pieces embedded in its crypto provider: Philip J. Erdelsky's
-public-domain Rijndael implementation, and the sha2 code from sphlib (`MIT`).
+It does carry obligations of its own. Apache-2.0 section 4(d) requires anyone
+redistributing a work that includes a `NOTICE` file to pass that file's attribution text
+along. qpdf ships one, reproduced verbatim at
+[`licenses/qpdf-NOTICE.txt`](licenses/qpdf-NOTICE.txt). It covers qpdf's own copyright,
+the option to treat pre-v7 qpdf as Artistic-2.0, a qtest attribution (qtest is a test
+harness and is not part of the shipped binary), and the Rijndael and sha2 code described
+below.
+
+**One required attribution is absent from that NOTICE.** qpdf's native crypto provider
+also compiles `libqpdf/MD5_native.cc`, which is derived from the RSA Data Security, Inc.
+MD5 Message-Digest Algorithm and licensed under `RSA-MD`. That license grants permission
+only "provided that it is identified as the 'RSA Data Security, Inc. MD5 Message-Digest
+Algorithm' in all material mentioning or referencing this software", and requires the
+notice to be retained in any copies. Upstream's `NOTICE.md` does not mention it, so
+reproducing the NOTICE alone does not discharge the requirement. Accordingly:
+
+> `bin/qpdf` contains a derivative of the RSA Data Security, Inc. MD5 Message-Digest
+> Algorithm. Copyright (C) 1991-2, RSA Data Security, Inc. Created 1991. All rights
+> reserved. RSA Data Security, Inc. makes no representations concerning either the
+> merchantability of this software or the suitability of this software for any
+> particular purpose. It is provided "as is" without express or implied warranty of any
+> kind.
 
 qpdf can optionally delegate encryption to GnuTLS (`LGPL-2.1-or-later`) or OpenSSL
-(`Apache-2.0`). This build does neither — it is configured with
-`-DUSE_IMPLICIT_CRYPTO=OFF -DREQUIRE_CRYPTO_NATIVE=ON`, which keeps full AES-256
-support using qpdf's own implementation and avoids statically linking an LGPL library.
+(`Apache-2.0`), neither of which compiles `MD5_native.cc`. This build uses neither — it
+is configured with `-DUSE_IMPLICIT_CRYPTO=OFF -DREQUIRE_CRYPTO_NATIVE=ON`, which keeps
+full AES-256 support without statically linking an LGPL library. The trade is the
+RSA-MD attribution above.
 
 ## Statically linked components
 
@@ -75,7 +94,12 @@ dependencies. The notable ones, by binary:
 | `ffmpeg`, `ffprobe` | x264 (`GPL-2.0-or-later`), x265 `4.1` (`GPL-2.0`), libvpx `v1.15.0` (`BSD-3-Clause`), Opus `v1.5.2` (`BSD-3-Clause`), LAME (`LGPL-2.1-or-later`), FreeType (`FTL OR GPL-2.0-or-later`), libpng, zlib, bzip2 (`bzip2-1.0.6`), Brotli (`MIT`) |
 | `magick` | libjpeg-turbo, libpng, libwebp, FreeType, libxml2 (`MIT`), libtiff `v4.7.0`, zlib, xz/liblzma (`0BSD`), bzip2, Brotli |
 | `zstd` | zlib, xz/liblzma, LZ4 (`BSD-2-Clause`) |
-| `qpdf` | zlib, libjpeg-turbo, and qpdf's built-in crypto provider: Rijndael/AES (public domain), sha2 from sphlib (`MIT`) |
+| `qpdf` | zlib, libjpeg-turbo, and qpdf's built-in crypto provider: Rijndael/AES (public domain), sha2 from sphlib (`MIT`), MD5 derived from the RSA Data Security, Inc. MD5 Message-Digest Algorithm (`RSA-MD`) |
+
+The C++ binaries (`magick`, `qpdf`) additionally contain libstdc++ and libgcc, which are
+`GPL-3.0-or-later WITH GCC-exception-3.1`. The GCC Runtime Library Exception expressly
+permits conveying the compiled work under any license, so their presence imposes no
+copyleft obligation on either binary.
 
 Unversioned components above are the Alpine Linux packages current at build time; the
 `alpine:latest` base image and its `apk` packages are not pinned, so exact versions
