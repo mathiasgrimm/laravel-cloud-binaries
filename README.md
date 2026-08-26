@@ -227,7 +227,9 @@ LGPL-2.1+ to GPL-2.0+.
 
 `qpdf` is Apache-2.0. It carries an upstream `NOTICE` file, reproduced in
 [`licenses/qpdf-NOTICE.txt`](licenses/qpdf-NOTICE.txt), which redistributors must pass
-along.
+along. It also contains code derived from the RSA Data Security, Inc. MD5 Message-Digest
+Algorithm, whose license requires exactly that identification wherever the derived work is
+referenced — see [`licenses/RSA-MD.txt`](licenses/RSA-MD.txt).
 
 If you are only *using* these binaries in your own application, the GPL imposes no
 obligations on you — running a program is not distribution. If you **redistribute**
