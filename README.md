@@ -159,6 +159,43 @@ vendor/bin/qpdf --empty --pages a.pdf b.pdf -- merged.pdf
 
 > **Note:** These are statically compiled Linux arm64 (musl) binaries. They will work on Laravel Cloud and other Linux arm64 environments but **not** on macOS, Windows, or x86-64 Linux.
 
+### ImageMagick delegates in Laravel
+
+ImageMagick can launch external tools such as `ffmpeg` when processing APNG.
+If you copied the binaries into your application's `bin/` directory, add this
+to `App\Providers\AppServiceProvider::boot()` before processing images:
+
+```php
+// Only expose these Linux ARM64 binaries on a compatible host.
+if (PHP_OS_FAMILY === 'Linux' && php_uname('m') === 'aarch64') {
+    $binaryDirectory = base_path('bin'); // Absolute path to the copied binaries.
+
+    if (is_dir($binaryDirectory)) {
+        $path = getenv('PATH');
+        $entries = $path === false ? [] : explode(PATH_SEPARATOR, $path);
+        $entries = array_filter($entries, fn (string $entry) => $entry !== $binaryDirectory);
+
+        putenv('PATH='.implode(PATH_SEPARATOR, [$binaryDirectory, ...$entries]));
+    }
+}
+```
+
+This prepends the directory idempotently, preserving the other PATH entries,
+and leaves unsupported development hosts unchanged. Use `base_path('vendor/bin')`
+instead if you run the Composer-installed binaries directly. The PHP process
+environment is inherited by delegate commands, so application boot covers web
+requests, queue workers, and Artisan. Restart long-running workers after deploying
+the change.
+
+PATH helps ImageMagick delegates that invoke executable names such as `ffmpeg`;
+it cannot override a hardcoded absolute executable path in ImageMagick's delegate
+configuration.
+
+PATH controls executable discovery, not pixel preservation. ImageMagick 7.1.2-31's
+default WebP intermediate is lossy. For pixel-exact APNG frames, set
+`$imagick->setOption('video:intermediate-format', 'pam')` before `readImage()`, or
+use `-define video:intermediate-format=pam` with the CLI.
+
 ## Building from source
 
 ### Prerequisites
