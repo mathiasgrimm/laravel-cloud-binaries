@@ -4,7 +4,7 @@
 
 # Laravel Cloud Binaries
 
-> Pre-built static binaries for Laravel Cloud. Ready in `vendor/bin`, no system packages required.
+> Pre-built static binaries for Laravel Cloud. Install with Composer, no system packages required.
 
 <p align="left">
     <a href="https://packagist.org/packages/mathiasgrimm/laravel-cloud-binaries"><img src="https://img.shields.io/packagist/v/mathiasgrimm/laravel-cloud-binaries.svg?style=flat-square" alt="Latest Version on Packagist"></a>
@@ -19,7 +19,7 @@
 > sponsored by Laravel or Laravel Cloud. "Laravel" is a trademark of its
 > respective owner.
 
-Pre-built, statically compiled binaries for Linux (arm64/musl). Designed to be installed as a Composer package so that `vendor/bin/` contains ready-to-use tools on Laravel Cloud (or any Linux arm64 environment).
+Pre-built, statically compiled binaries for Linux (arm64/musl). Install as a production Composer dependency and use the executables directly from `vendor/mathiasgrimm/laravel-cloud-binaries/bin/` on Laravel Cloud or another Linux ARM64 environment.
 
 This package includes all the binaries required by [spatie/image-optimizer](https://github.com/spatie/image-optimizer), making it a drop-in solution for image optimization on environments where system packages are not available. Note that [svgo](https://github.com/svg/svgo) is not included as it is a regular npm package and can be installed via `npm install -g svgo`.
 
@@ -72,89 +72,41 @@ All upstream versions are defined at the top of the `Makefile` and passed to eac
 composer require mathiasgrimm/laravel-cloud-binaries
 ```
 
-Composer will symlink all 13 binaries into `vendor/bin/`.
+Keep the package in `require`, not `require-dev`, so production deployments using
+`composer install --no-dev` include it. Use the existing
+`vendor/mathiasgrimm/laravel-cloud-binaries/bin/` directory directly; no copying
+or committing binaries to your application repository is needed. Commit your
+`composer.json` and `composer.lock` and let Composer install the locked version.
 
-## Selective installation (faster deploys)
-
-If you only need a few binaries, you can install the package as a dev dependency, copy just the ones you need into your repository, and avoid downloading the full ~89 MB on every deploy:
-
-```bash
-composer require --dev mathiasgrimm/laravel-cloud-binaries
-
-# Copy only the binaries you need into your project
-mkdir -p bin
-cp vendor/bin/jpegoptim bin/
-cp vendor/bin/optipng bin/
-cp vendor/bin/pngquant bin/
-
-# Commit them
-git add bin/
-git commit -m "Add image optimization binaries"
-```
-
-Then reference them from your application using `base_path('bin/jpegoptim')` (or whichever path you chose). Since the binaries are committed to your repository, they are available immediately during deployment with no Composer overhead.
-
-To keep your committed binaries in sync automatically when the package is updated, add a `post-update-cmd` script to your `composer.json`:
-
-```json
-{
-    "scripts": {
-        "post-update-cmd": [
-            "@php -r \"@mkdir('bin', 0755, true);\"",
-            "@php -r \"copy('vendor/mathiasgrimm/laravel-cloud-binaries/bin/jpegoptim', 'bin/jpegoptim');\"",
-            "@php -r \"copy('vendor/mathiasgrimm/laravel-cloud-binaries/bin/optipng', 'bin/optipng');\"",
-            "@php -r \"copy('vendor/mathiasgrimm/laravel-cloud-binaries/bin/pngquant', 'bin/pngquant');\""
-        ]
-    }
-}
-```
-
-After every `composer update`, the selected binaries are copied into `bin/` automatically. Adjust the list to include only the binaries you need. The `@php -r` syntax ensures the commands work on all platforms (Linux, macOS, and Windows).
-
-## Prefer not to ship binaries at all?
-
-This package runs optimization on your own infrastructure, which is the right
-trade-off when you want no external dependency and no per-image cost.
-
-If you would rather not ship ~89 MB of executables, [Glimpse](https://glimpseimg.com)
-does the same kind of work — optimize, convert, resize, thumbnail — over an HTTP
-API, with a CLI and a PHP SDK and nothing to compile:
-
-```bash
-composer require mathiasgrimm/glimpse-cli
-
-glimpse optimize public/images/hero.png --in-place
-glimpse convert public/images/hero.png --format=avif --optimize -i
-```
-
-The trade-off is the obvious one: images are processed by a third-party service
-rather than locally, so it needs network access, and anything beyond the
-`analyze`/`check` endpoints requires an API token. Pick whichever fits — locally
-executed binaries, or a managed API.
-
-This repository uses Glimpse itself, in CI, to keep its own banner optimized.
+Composer also exposes proxies in `vendor/bin/` for convenience. Adding the
+package's dedicated directory to PATH keeps the addition scoped to this package
+instead of exposing every dependency's executable.
 
 ## Usage
 
-After installation, the binaries are available in `vendor/bin/`:
+On Linux ARM64, prepend the package's directory to your shell PATH from the
+application root, then invoke its executables by name. This changes the current
+shell; use the Laravel boot example below for PHP processes:
 
 ```bash
-vendor/bin/jpegoptim --strip-all image.jpg
-vendor/bin/optipng -o2 image.png
-vendor/bin/pngquant --quality=65-80 image.png
-vendor/bin/cwebp -q 80 image.png -o image.webp
-vendor/bin/dwebp image.webp -o image.png
-vendor/bin/avifenc image.png image.avif
-vendor/bin/avifdec image.avif image.png
-vendor/bin/gifsicle -O3 animation.gif -o optimized.gif
-vendor/bin/ffmpeg -i input.mp4 -c:v libx264 output.mp4
-vendor/bin/ffmpeg -i input.png -frames:v 1 -c:v libwebp output.webp
-vendor/bin/ffprobe -v quiet -print_format json -show_format input.mp4
-vendor/bin/magick input.png -resize 50% output.png
-vendor/bin/zstd -19 backup.sql -o backup.sql.zst
-vendor/bin/zstd -d backup.sql.zst
-vendor/bin/qpdf --linearize input.pdf output.pdf
-vendor/bin/qpdf --empty --pages a.pdf b.pdf -- merged.pdf
+export PATH="$PWD/vendor/mathiasgrimm/laravel-cloud-binaries/bin:$PATH"
+
+jpegoptim --strip-all image.jpg
+optipng -o2 image.png
+pngquant --quality=65-80 image.png
+cwebp -q 80 image.png -o image.webp
+dwebp image.webp -o image.png
+avifenc image.png image.avif
+avifdec image.avif image.png
+gifsicle -O3 animation.gif -o optimized.gif
+ffmpeg -i input.mp4 -c:v libx264 output.mp4
+ffmpeg -i input.png -frames:v 1 -c:v libwebp output.webp
+ffprobe -v quiet -print_format json -show_format input.mp4
+magick input.png -resize 50% output.png
+zstd -19 backup.sql -o backup.sql.zst
+zstd -d backup.sql.zst
+qpdf --linearize input.pdf output.pdf
+qpdf --empty --pages a.pdf b.pdf -- merged.pdf
 ```
 
 > **Note:** These are statically compiled Linux arm64 (musl) binaries. They will work on Laravel Cloud and other Linux arm64 environments but **not** on macOS, Windows, or x86-64 Linux.
@@ -164,27 +116,26 @@ vendor/bin/qpdf --empty --pages a.pdf b.pdf -- merged.pdf
 Adding the binary directory to PATH makes all bundled executable names
 discoverable to child commands launched by PHP. For example, ImageMagick can
 launch `ffmpeg` as a delegate when processing APNG.
-If you copied the binaries into your application's `bin/` directory, add this
-setup to `App\Providers\AppServiceProvider::boot()` in
-`app/Providers/AppServiceProvider.php`, keeping any existing boot logic:
+After installing the production dependency, add this setup to
+`App\Providers\AppServiceProvider::boot()` in `app/Providers/AppServiceProvider.php`,
+keeping any existing boot logic:
 
 ```php
 public function boot(): void
 {
     // Only expose these Linux ARM64 binaries on a compatible host.
     if (PHP_OS_FAMILY === 'Linux' && php_uname('m') === 'aarch64') {
-        putenv('PATH='.base_path('bin').PATH_SEPARATOR.getenv('PATH'));
+        putenv('PATH='.base_path('vendor/mathiasgrimm/laravel-cloud-binaries/bin').PATH_SEPARATOR.getenv('PATH'));
     }
 }
 ```
 
 This prepends the absolute directory while preserving the existing PATH,
 and leaves unsupported development hosts unchanged. Repeated boot calls may add
-duplicate entries, which are harmless here. Use `base_path('vendor/bin')`
-instead if you run the Composer-installed binaries directly. The PHP process
-environment is inherited by child commands, so application boot covers web
-requests, queue workers, and Artisan. Restart long-running workers after deploying
-the change.
+duplicate entries, which are harmless here. The directory contains only this
+package's binaries. The PHP process environment is inherited by child commands,
+so application boot covers web requests, queue workers, and Artisan. Restart
+long-running workers after deploying the change.
 
 PATH helps commands that invoke executable names such as `ffmpeg`, `cwebp`, or
 `qpdf`; it cannot override a hardcoded absolute executable path, including one
@@ -202,8 +153,10 @@ verified as Debian GNU/Linux 12 on aarch64 with PHP 8.5. This describes that
 instance, not a guarantee about every Cloud environment; check your own runtime
 when choosing a CI image.
 
-To smoke-test this package repository on Debian 12 ARM64, save this workflow as
-`.github/workflows/debian-smoke.yml`:
+For an application that already requires this package (v1.3.2 or newer) and
+commits its Composer files, save this package smoke test as
+`.github/workflows/debian-smoke.yml`. Add any application-specific setup needed
+by your Composer scripts:
 
 ```yaml
 name: Debian ARM64 smoke test
@@ -216,21 +169,75 @@ jobs:
     container: shivammathur/node:php-8.5-bookworm-arm64v8
     steps:
       - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          tools: composer:v2
+          coverage: none
+      - name: Install production dependencies
+        run: composer install --no-dev --no-interaction --prefer-dist
       - name: Check runtime and WebP/APNG support
         run: |
           test "$(uname -m)" = aarch64
           php -v
-          BIN_DIR="$GITHUB_WORKSPACE/bin" sh tests/ffmpeg-webp.sh
+          package="$GITHUB_WORKSPACE/vendor/mathiasgrimm/laravel-cloud-binaries"
+          BIN_DIR="$package/bin" sh "$package/tests/ffmpeg-webp.sh"
 ```
 
 `runs-on` selects the Ubuntu ARM64 host; the container supplies Debian 12
 (Bookworm) userspace and PHP 8.5. The shipped binaries require Linux ARM64, but
-do not require PHP. The smoke test uses the package's committed binaries.
+do not require PHP. The smoke test uses the Composer-installed package directly.
 
 The tested container image ships ImageMagick 6, not the target Cloud instance's
 ImageMagick 7.1.2-31. Matching that runtime for application tests requires a
 separate IM7 build and rebuilding PHP Imagick against it; this workflow does
 not perform those steps.
+
+## Optional: copy selected binaries for smaller deployments
+
+Direct production installation is the recommended approach. If deployment size
+matters more than automatic package management, you can instead install the
+package as a development dependency and copy only the tools you need:
+
+```bash
+composer require --dev mathiasgrimm/laravel-cloud-binaries
+mkdir -p bin
+cp vendor/mathiasgrimm/laravel-cloud-binaries/bin/jpegoptim bin/
+cp vendor/mathiasgrimm/laravel-cloud-binaries/bin/optipng bin/
+cp vendor/mathiasgrimm/laravel-cloud-binaries/bin/pngquant bin/
+```
+
+This alternative requires shipping the copied files yourself, for example by
+committing them to your application repository with their executable permissions.
+It can reduce the deployed binary payload when Composer installs with `--no-dev`,
+but grows your repository if committed. Composer updates do not refresh those
+copies: you must copy, test, and redeploy them when upgrading, and include every
+tool your application needs, including delegates such as ffmpeg. Point PATH at
+`base_path('bin')` only for this optional copied-binary layout. The Linux ARM64
+restriction and redistribution notices still apply.
+
+## Prefer not to ship binaries at all?
+
+This package runs optimization on your own infrastructure, which is the right
+trade-off when you want no external dependency and no per-image cost.
+
+If you would rather not ship ~89 MB of executables, [Glimpse](https://glimpseimg.com)
+offers optimization, conversion, resizing, and thumbnails over an HTTP
+API, with a CLI and a PHP SDK and nothing to compile:
+
+```bash
+composer require mathiasgrimm/glimpse-cli
+
+glimpse optimize public/images/hero.png --in-place
+glimpse convert public/images/hero.png --format=avif --optimize -i
+```
+
+The trade-off is the obvious one: images are processed by a third-party service
+rather than locally, so it needs network access, and anything beyond the
+`analyze`/`check` endpoints requires an API token. Pick whichever fits — locally
+executed binaries, or a managed API.
+
+This repository uses Glimpse itself, in CI, to keep its own banner optimized.
 
 ## Building from source
 
