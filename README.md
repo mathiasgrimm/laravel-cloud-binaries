@@ -159,9 +159,11 @@ vendor/bin/qpdf --empty --pages a.pdf b.pdf -- merged.pdf
 
 > **Note:** These are statically compiled Linux arm64 (musl) binaries. They will work on Laravel Cloud and other Linux arm64 environments but **not** on macOS, Windows, or x86-64 Linux.
 
-### ImageMagick delegates in Laravel
+### Using the binaries in Laravel
 
-ImageMagick can launch external tools such as `ffmpeg` when processing APNG.
+Adding the binary directory to PATH makes all bundled executable names
+discoverable to child commands launched by PHP. For example, ImageMagick can
+launch `ffmpeg` as a delegate when processing APNG.
 If you copied the binaries into your application's `bin/` directory, add this
 setup to `App\Providers\AppServiceProvider::boot()` in
 `app/Providers/AppServiceProvider.php`, keeping any existing boot logic:
@@ -180,13 +182,13 @@ This prepends the absolute directory while preserving the existing PATH,
 and leaves unsupported development hosts unchanged. Repeated boot calls may add
 duplicate entries, which are harmless here. Use `base_path('vendor/bin')`
 instead if you run the Composer-installed binaries directly. The PHP process
-environment is inherited by delegate commands, so application boot covers web
+environment is inherited by child commands, so application boot covers web
 requests, queue workers, and Artisan. Restart long-running workers after deploying
 the change.
 
-PATH helps ImageMagick delegates that invoke executable names such as `ffmpeg`;
-it cannot override a hardcoded absolute executable path in ImageMagick's delegate
-configuration.
+PATH helps commands that invoke executable names such as `ffmpeg`, `cwebp`, or
+`qpdf`; it cannot override a hardcoded absolute executable path, including one
+in ImageMagick's delegate configuration.
 
 PATH controls executable discovery, not pixel preservation. ImageMagick 7.1.2-31's
 default WebP intermediate is lossy. For pixel-exact APNG frames, set
@@ -194,6 +196,11 @@ default WebP intermediate is lossy. For pixel-exact APNG frames, set
 use `-define video:intermediate-format=pam` with the CLI.
 
 ### Debian 12 ARM64 in GitHub Actions
+
+Debian 12 is chosen to match the Laravel Cloud environment this example targets,
+verified as Debian GNU/Linux 12 on aarch64 with PHP 8.5. This describes that
+instance, not a guarantee about every Cloud environment; check your own runtime
+when choosing a CI image.
 
 To smoke-test this package repository on Debian 12 ARM64, save this workflow as
 `.github/workflows/debian-smoke.yml`:
@@ -220,7 +227,7 @@ jobs:
 (Bookworm) userspace and PHP 8.5. The shipped binaries require Linux ARM64, but
 do not require PHP. The smoke test uses the package's committed binaries.
 
-The tested container image ships ImageMagick 6, not Laravel Cloud's
+The tested container image ships ImageMagick 6, not the target Cloud instance's
 ImageMagick 7.1.2-31. Matching that runtime for application tests requires a
 separate IM7 build and rebuilding PHP Imagick against it; this workflow does
 not perform those steps.
