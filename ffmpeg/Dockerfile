@@ -54,6 +54,25 @@ RUN git clone --depth 1 --branch v1.5.2 https://github.com/xiph/opus.git /src/op
     cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DOPUS_BUILD_PROGRAMS=OFF -DOPUS_BUILD_TESTING=OFF && \
     cmake --build build -j$(nproc) && cmake --install build
 
+# Use the same pinned libwebp as cwebp/dwebp, linked into ffmpeg itself.
+ARG LIBWEBP_VERSION
+RUN git clone --depth 1 --branch ${LIBWEBP_VERSION} https://chromium.googlesource.com/webm/libwebp.git /src/libwebp && \
+    cd /src/libwebp && \
+    cmake -B build \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DBUILD_SHARED_LIBS=OFF \
+      -DWEBP_LINK_STATIC=ON \
+      -DWEBP_BUILD_CWEBP=OFF \
+      -DWEBP_BUILD_DWEBP=OFF \
+      -DWEBP_BUILD_ANIM_UTILS=OFF \
+      -DWEBP_BUILD_GIF2WEBP=OFF \
+      -DWEBP_BUILD_IMG2WEBP=OFF \
+      -DWEBP_BUILD_VWEBP=OFF \
+      -DWEBP_BUILD_WEBPINFO=OFF \
+      -DWEBP_BUILD_WEBPMUX=OFF \
+      -DWEBP_BUILD_EXTRAS=OFF && \
+    cmake --build build -j$(nproc) && cmake --install build
+
 ARG VERSION
 RUN git clone --depth 1 --branch ${VERSION} https://github.com/FFmpeg/FFmpeg.git /src/ffmpeg
 
@@ -70,6 +89,7 @@ RUN PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:$PKG_CO
       --enable-libopus \
       --enable-libmp3lame \
       --enable-libfreetype \
+      --enable-libwebp \
       --extra-cflags="-I/usr/local/include" \
       --extra-ldflags="-static -L/usr/local/lib -L/usr/local/lib64" \
       --pkg-config-flags="--static" \

@@ -76,7 +76,7 @@ bin/gifsicle: gifsicle/Dockerfile
 # --- ffmpeg + ffprobe (single image, two binaries) ---
 bin/ffmpeg bin/ffprobe: ffmpeg/Dockerfile
 	mkdir -p bin
-	docker build --build-arg VERSION=$(FFMPEG_VERSION) -t ffmpeg ./ffmpeg
+	docker build --build-arg VERSION=$(FFMPEG_VERSION) --build-arg LIBWEBP_VERSION=$(LIBWEBP_VERSION) -t ffmpeg ./ffmpeg
 	docker rm -f tmp-ffmpeg 2>/dev/null || true
 	docker create --name tmp-ffmpeg ffmpeg /true
 	docker cp tmp-ffmpeg:/ffmpeg bin/ffmpeg
@@ -114,6 +114,7 @@ bin/qpdf: qpdf/Dockerfile
 test: $(BINARIES) test-only
 
 test-only:
+	docker run --rm -v "$(CURDIR)/bin:/opt/bin:ro" -v "$(CURDIR)/tests:/opt/tests:ro" alpine sh /opt/tests/ffmpeg-webp.sh
 	docker run --rm -v $(CURDIR)/bin:/opt/bin alpine sh -c ' \
 		set -e && \
 		/opt/bin/jpegoptim --version && \
