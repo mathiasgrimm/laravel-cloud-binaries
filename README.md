@@ -171,21 +171,14 @@ public function boot(): void
 {
     // Only expose these Linux ARM64 binaries on a compatible host.
     if (PHP_OS_FAMILY === 'Linux' && php_uname('m') === 'aarch64') {
-        $binaryDirectory = base_path('bin'); // Absolute path to the copied binaries.
-
-        if (is_dir($binaryDirectory)) {
-            $path = getenv('PATH');
-            $entries = $path === false ? [] : explode(PATH_SEPARATOR, $path);
-            $entries = array_filter($entries, fn (string $entry) => $entry !== $binaryDirectory);
-
-            putenv('PATH='.implode(PATH_SEPARATOR, [$binaryDirectory, ...$entries]));
-        }
+        putenv('PATH='.base_path('bin').PATH_SEPARATOR.getenv('PATH'));
     }
 }
 ```
 
-This prepends the directory idempotently, preserving the other PATH entries,
-and leaves unsupported development hosts unchanged. Use `base_path('vendor/bin')`
+This prepends the absolute directory while preserving the existing PATH,
+and leaves unsupported development hosts unchanged. Repeated boot calls may add
+duplicate entries, which are harmless here. Use `base_path('vendor/bin')`
 instead if you run the Composer-installed binaries directly. The PHP process
 environment is inherited by delegate commands, so application boot covers web
 requests, queue workers, and Artisan. Restart long-running workers after deploying
