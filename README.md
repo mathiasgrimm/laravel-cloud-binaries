@@ -193,6 +193,38 @@ default WebP intermediate is lossy. For pixel-exact APNG frames, set
 `$imagick->setOption('video:intermediate-format', 'pam')` before `readImage()`, or
 use `-define video:intermediate-format=pam` with the CLI.
 
+### Debian 12 ARM64 in GitHub Actions
+
+To smoke-test this package repository on Debian 12 ARM64, save this workflow as
+`.github/workflows/debian-smoke.yml`:
+
+```yaml
+name: Debian ARM64 smoke test
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04-arm
+    container: shivammathur/node:php-8.5-bookworm-arm64v8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check runtime and WebP/APNG support
+        run: |
+          test "$(uname -m)" = aarch64
+          php -v
+          BIN_DIR="$GITHUB_WORKSPACE/bin" sh tests/ffmpeg-webp.sh
+```
+
+`runs-on` selects the Ubuntu ARM64 host; the container supplies Debian 12
+(Bookworm) userspace and PHP 8.5. The shipped binaries require Linux ARM64, but
+do not require PHP. The smoke test uses the package's committed binaries.
+
+The tested container image ships ImageMagick 6, not Laravel Cloud's
+ImageMagick 7.1.2-31. Matching that runtime for application tests requires a
+separate IM7 build and rebuilding PHP Imagick against it; this workflow does
+not perform those steps.
+
 ## Building from source
 
 ### Prerequisites
