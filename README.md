@@ -163,19 +163,23 @@ vendor/bin/qpdf --empty --pages a.pdf b.pdf -- merged.pdf
 
 ImageMagick can launch external tools such as `ffmpeg` when processing APNG.
 If you copied the binaries into your application's `bin/` directory, add this
-to `App\Providers\AppServiceProvider::boot()` before processing images:
+setup to `App\Providers\AppServiceProvider::boot()` in
+`app/Providers/AppServiceProvider.php`, keeping any existing boot logic:
 
 ```php
-// Only expose these Linux ARM64 binaries on a compatible host.
-if (PHP_OS_FAMILY === 'Linux' && php_uname('m') === 'aarch64') {
-    $binaryDirectory = base_path('bin'); // Absolute path to the copied binaries.
+public function boot(): void
+{
+    // Only expose these Linux ARM64 binaries on a compatible host.
+    if (PHP_OS_FAMILY === 'Linux' && php_uname('m') === 'aarch64') {
+        $binaryDirectory = base_path('bin'); // Absolute path to the copied binaries.
 
-    if (is_dir($binaryDirectory)) {
-        $path = getenv('PATH');
-        $entries = $path === false ? [] : explode(PATH_SEPARATOR, $path);
-        $entries = array_filter($entries, fn (string $entry) => $entry !== $binaryDirectory);
+        if (is_dir($binaryDirectory)) {
+            $path = getenv('PATH');
+            $entries = $path === false ? [] : explode(PATH_SEPARATOR, $path);
+            $entries = array_filter($entries, fn (string $entry) => $entry !== $binaryDirectory);
 
-        putenv('PATH='.implode(PATH_SEPARATOR, [$binaryDirectory, ...$entries]));
+            putenv('PATH='.implode(PATH_SEPARATOR, [$binaryDirectory, ...$entries]));
+        }
     }
 }
 ```
