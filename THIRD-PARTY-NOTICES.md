@@ -98,7 +98,7 @@ dependencies. The notable ones, by binary:
 | `cwebp`, `dwebp` | libpng, libjpeg-turbo, giflib (`MIT`), libtiff (`libtiff`), zlib |
 | `avifenc`, `avifdec` | libaom (`BSD-2-Clause` + AOM patent license), libpng, libjpeg-turbo, zlib |
 | `gifsicle` | — |
-| `ffmpeg`, `ffprobe` | x264 (`GPL-2.0-or-later`), x265 `4.1` (`GPL-2.0`), libvpx `v1.15.0` (`BSD-3-Clause`), Opus `v1.5.2` (`BSD-3-Clause`), LAME (`LGPL-2.1-or-later`), FreeType (`FTL OR GPL-2.0-or-later`), libpng, zlib, bzip2 (`bzip2-1.0.6`), Brotli (`MIT`) |
+| `ffmpeg`, `ffprobe` | x264 (`GPL-2.0-or-later`), x265 `4.1` (`GPL-2.0`), libvpx `v1.15.0` (`BSD-3-Clause`), Opus `v1.5.2` (`BSD-3-Clause`), libwebp `v1.5.0` (`BSD-3-Clause`, [license](licenses/libwebp.txt)), LAME (`LGPL-2.1-or-later`), FreeType (`FTL OR GPL-2.0-or-later`), libpng, zlib, bzip2 (`bzip2-1.0.6`), Brotli (`MIT`) |
 | `magick` | libjpeg-turbo, libpng, libwebp, FreeType, libxml2 (`MIT`), libtiff `v4.7.0`, zlib, xz/liblzma (`0BSD`), bzip2, Brotli |
 | `zstd` | zlib, xz/liblzma, LZ4 (`BSD-2-Clause`) |
 | `qpdf` | zlib, libjpeg-turbo, and qpdf's built-in crypto provider: Rijndael/AES (public domain), sha2 from sphlib (`MIT`), MD5 derived from the RSA Data Security, Inc. MD5 Message-Digest Algorithm (`RSA-MD`) |

@@ -64,7 +64,7 @@ All upstream versions are defined at the top of the `Makefile` and passed to eac
 | magick | `IMAGEMAGICK_VERSION` | `7.1.1-43` | 7.8 MB |
 | zstd | `ZSTD_VERSION` | `v1.5.7` | 1.5 MB |
 | qpdf | `QPDF_VERSION` | `v12.4.0` | 3.3 MB |
-| **Total** | | | **88 MB** |
+| **Total** | | | **89 MB** |
 
 ## Installation
 
@@ -76,7 +76,7 @@ Composer will symlink all 13 binaries into `vendor/bin/`.
 
 ## Selective installation (faster deploys)
 
-If you only need a few binaries, you can install the package as a dev dependency, copy just the ones you need into your repository, and avoid downloading the full ~88 MB on every deploy:
+If you only need a few binaries, you can install the package as a dev dependency, copy just the ones you need into your repository, and avoid downloading the full ~89 MB on every deploy:
 
 ```bash
 composer require --dev mathiasgrimm/laravel-cloud-binaries
@@ -116,7 +116,7 @@ After every `composer update`, the selected binaries are copied into `bin/` auto
 This package runs optimization on your own infrastructure, which is the right
 trade-off when you want no external dependency and no per-image cost.
 
-If you would rather not ship ~88 MB of executables, [Glimpse](https://glimpseimg.com)
+If you would rather not ship ~89 MB of executables, [Glimpse](https://glimpseimg.com)
 does the same kind of work — optimize, convert, resize, thumbnail — over an HTTP
 API, with a CLI and a PHP SDK and nothing to compile:
 
@@ -148,6 +148,7 @@ vendor/bin/avifenc image.png image.avif
 vendor/bin/avifdec image.avif image.png
 vendor/bin/gifsicle -O3 animation.gif -o optimized.gif
 vendor/bin/ffmpeg -i input.mp4 -c:v libx264 output.mp4
+vendor/bin/ffmpeg -i input.png -frames:v 1 -c:v libwebp output.webp
 vendor/bin/ffprobe -v quiet -print_format json -show_format input.mp4
 vendor/bin/magick input.png -resize 50% output.png
 vendor/bin/zstd -19 backup.sql -o backup.sql.zst
@@ -207,6 +208,25 @@ Verify that all binaries work correctly by running them inside an Alpine Docker 
 make test          # build (if needed) + test
 make test-only     # test without rebuilding
 ```
+
+The tests encode and decode a real WebP image, then generate a three-frame APNG
+and run ImageMagick 7.1.2-31's ffmpeg delegate command with WebP intermediates.
+They also exercise the bundled ImageMagick's APNG delegate and check PAM
+intermediates for older ImageMagick delegates. FFmpeg links
+libwebp statically; the separate `cwebp` and `dwebp` executables are not needed
+for its WebP encoder. No `video:intermediate-format=pam` override is required
+for decoding. ImageMagick 7.1.2-31's default WebP intermediate is lossy; use
+`-define video:intermediate-format=pam` when you need pixel-exact frames.
+
+To rebuild both ffmpeg artifacts after changing their build configuration:
+
+```bash
+make -B bin/ffmpeg
+make test-only
+```
+
+The ffmpeg build extracts both `bin/ffmpeg` and `bin/ffprobe` and uses the same
+`LIBWEBP_VERSION` pin as the standalone WebP tools.
 
 ### Clean up
 
