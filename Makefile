@@ -57,7 +57,7 @@ bin/cwebp bin/dwebp: cwebp/Dockerfile
 	docker rm tmp-cwebp
 
 # --- avifenc + avifdec (single image, two binaries) ---
-bin/avifenc bin/avifdec: avifenc/Dockerfile Makefile
+bin/avifenc bin/avifdec: avifenc/Dockerfile avifenc/patches/grid-metadata.patch Makefile
 	mkdir -p bin
 	docker build --platform linux/arm64 --build-arg VERSION=$(LIBAVIF_VERSION) --build-arg DAV1D_VERSION=$(DAV1D_VERSION) --build-arg DAV1D_COMMIT=$(DAV1D_COMMIT) -t avifenc ./avifenc
 	docker rm -f tmp-avifenc 2>/dev/null || true
@@ -116,7 +116,7 @@ bin/qpdf: qpdf/Dockerfile
 test: $(BINARIES) test-only
 
 test-avif:
-	docker run --rm --platform linux/arm64 -v "$(CURDIR)/bin:/opt/bin:ro" -v "$(CURDIR)/tests:/opt/tests:ro" alpine sh -c 'apk add --no-cache file binutils >/dev/null && sh /opt/tests/avif.sh'
+	docker run --rm --platform linux/arm64 -v "$(CURDIR)/bin:/opt/bin:ro" -v "$(CURDIR)/tests:/opt/tests:ro" alpine sh -c 'apk add --no-cache file binutils python3 py3-pillow exiftool >/dev/null && sh /opt/tests/avif.sh && python3 /opt/tests/avif-grid-metadata.py'
 
 test-only: test-avif
 	docker run --rm -v "$(CURDIR)/bin:/opt/bin:ro" -v "$(CURDIR)/tests:/opt/tests:ro" alpine sh /opt/tests/ffmpeg-webp.sh
