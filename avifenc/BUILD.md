@@ -2,7 +2,8 @@
 
 The AVIF pair uses libavif v1.2.1 and static musl dependencies. dav1d is the
 preferred decoder; AOM remains both the encoder and an explicit decoder fallback.
-No libavif source or CLI patches are applied.
+A minimal upstream [grid metadata backport](patches/README.md) is applied to
+`avifenc`; CLI options and codec selection are unchanged.
 
 ## Sources and selection
 
@@ -41,17 +42,17 @@ The local Alpine image resolved to
 `alpine@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659`.
 The build still uses `alpine:latest` and unpinned APK dependencies, so these are
 recorded provenance, not a promise of byte-for-byte reproducibility. In particular,
-AOM changed from the prior artifacts' 3.13.1 to 3.14.1 during this rebuild.
+AOM remains at the v1.4.0 artifacts' 3.14.1 for this metadata fix.
 Both default and explicit AOM encoding are covered by the focused regression suite.
 
 | Artifact | Previous bytes | Current bytes | SHA-256 |
 |----------|---------------:|--------------:|---------|
-| `bin/avifenc` | 7,091,328 | 8,008,880 | `00837998e067671aae0b823d6e2f29dec45904bc491d8f5998218d921bcf3f2b` |
-| `bin/avifdec` | 7,025,792 | 8,008,880 | `9b65c24ef3e4dce60519ff97b10c0dc103e56c827dd843a380660ce34fa7802f` |
+| `bin/avifenc` | 8,008,880 | 8,008,880 | `97e87bc41a8f221ba5563bf4f95dcc4968ed17a117f55a7bc10c90035ae42c7c` |
+| `bin/avifdec` | 8,008,880 | 8,008,880 | `9b65c24ef3e4dce60519ff97b10c0dc103e56c827dd843a380660ce34fa7802f` |
 
-The combined increase is 1,900,640 bytes (about 1.81 MiB). This includes all
-rebuild dependency changes, not just dav1d. The intended benefit is reduced
-AVIF decoding memory; no speed improvement is promised.
+Sizes are unchanged from v1.4.0. The rebuilt `avifdec` is byte-identical; only
+`avifenc` changes. The fix preserves ICC, XMP and Exif when splitting one input
+into grid cells, including explicit metadata and rotation/mirror overrides.
 
 ## Focused validation
 
@@ -63,3 +64,8 @@ AOM decoding, image dimensions, retained alpha, and identical full 16-bit RGBA
 samples across decoders. An explicit AOM lossless case also compares decoded
 8-bit RGBA samples to the input. These are small correctness fixtures, not
 memory or performance benchmarks.
+
+The [metadata regression](../tests/avif-grid-metadata.py) adds generated PNG and
+JPEG fixtures, exact ICC/XMP/Exif extraction, ordinary and both grid input modes,
+ignore flags, transform precedence, and lossless color/alpha comparisons. See
+the [patch provenance](patches/README.md) for upstream commits and Exif semantics.

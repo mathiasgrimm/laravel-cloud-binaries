@@ -28,6 +28,9 @@ RUN git clone --depth 1 --branch ${DAV1D_VERSION} https://code.videolan.org/vide
 
 WORKDIR /src/libavif
 
+COPY patches/grid-metadata.patch /tmp/grid-metadata.patch
+RUN git apply --check /tmp/grid-metadata.patch && git apply /tmp/grid-metadata.patch
+
 # Remove dynamic libs (except libz which cmake needs) to force static linking
 RUN rm -f /usr/lib/libaom.so* /usr/lib/libpng*.so* /usr/lib/libjpeg*.so* /usr/lib/libturbojpeg*.so* && \
     mkdir build && cd build && \
