@@ -47,7 +47,7 @@ All binaries are statically linked against musl libc (Alpine Linux) and built fo
 
 ## Pinned versions
 
-All upstream versions are defined at the top of the `Makefile` and passed to each Dockerfile via `--build-arg`. To bump a version, change the single variable in the Makefile.
+Primary upstream versions are defined at the top of the `Makefile` and passed to each Dockerfile via `--build-arg`. To bump a version, change its variable in the Makefile. The dav1d dependency also has a verified commit pin.
 
 | Binary | Variable | Current version | Size |
 |--------|----------|-----------------|------|
@@ -56,15 +56,27 @@ All upstream versions are defined at the top of the `Makefile` and passed to eac
 | pngquant | `PNGQUANT_VERSION` | `3.0.3` | 1.1 MB |
 | cwebp | `LIBWEBP_VERSION` | `v1.5.0` | 1.1 MB |
 | dwebp | `LIBWEBP_VERSION` | `v1.5.0` | 834 KB |
-| avifenc | `LIBAVIF_VERSION` | `v1.2.1` | 6.8 MB |
-| avifdec | `LIBAVIF_VERSION` | `v1.2.1` | 6.7 MB |
+| avifenc | `LIBAVIF_VERSION` | `v1.2.1` | 7.6 MB |
+| avifdec | `LIBAVIF_VERSION` | `v1.2.1` | 7.6 MB |
 | gifsicle | `GIFSICLE_VERSION` | `v1.96` | 323 KB |
 | ffmpeg | `FFMPEG_VERSION` | `n7.1.1` | 29 MB |
 | ffprobe | `FFMPEG_VERSION` | `n7.1.1` | 29 MB |
 | magick | `IMAGEMAGICK_VERSION` | `7.1.1-43` | 7.8 MB |
 | zstd | `ZSTD_VERSION` | `v1.5.7` | 1.5 MB |
 | qpdf | `QPDF_VERSION` | `v12.4.0` | 3.3 MB |
-| **Total** | | | **89 MB** |
+| **Total** | | | **91 MB** |
+
+### AVIF decoder
+
+`avifdec input.avif output.png` uses statically linked dav1d 1.5.1 by default.
+`avifenc` continues to use AOM, and `avifdec --codec aom` retains the explicit
+AOM decoder fallback. Executable paths and CLI options are unchanged. Portable
+applications can omit `--codec`, including on hosts with AOM-only libavif tools.
+
+The purpose is lower decoding memory use, not a speed guarantee. Both AVIF
+binaries remain libavif v1.2.1 and require no shared codec libraries. See
+[AVIF build provenance](avifenc/BUILD.md) for dependency versions, upstream
+selection logic, artifact hashes and the approximately 1.8 MiB combined size increase.
 
 ## Installation
 
@@ -76,7 +88,7 @@ Composer will symlink all 13 binaries into `vendor/bin/`.
 
 ## Selective installation (faster deploys)
 
-If you only need a few binaries, you can install the package as a dev dependency, copy just the ones you need into your repository, and avoid downloading the full ~89 MB on every deploy:
+If you only need a few binaries, you can install the package as a dev dependency, copy just the ones you need into your repository, and avoid downloading the full ~91 MB on every deploy:
 
 ```bash
 composer require --dev mathiasgrimm/laravel-cloud-binaries
@@ -116,7 +128,7 @@ After every `composer update`, the selected binaries are copied into `bin/` auto
 This package runs optimization on your own infrastructure, which is the right
 trade-off when you want no external dependency and no per-image cost.
 
-If you would rather not ship ~89 MB of executables, [Glimpse](https://glimpseimg.com)
+If you would rather not ship ~91 MB of executables, [Glimpse](https://glimpseimg.com)
 does the same kind of work — optimize, convert, resize, thumbnail — over an HTTP
 API, with a CLI and a PHP SDK and nothing to compile:
 
@@ -174,7 +186,7 @@ make
 
 Binaries are output to the `bin/` directory.
 
-Each Dockerfile builds for the host architecture, so run the build on an arm64 machine (Apple Silicon, or any aarch64 Linux host) to match the architecture of the committed binaries. Builds are not byte-for-byte reproducible — the Dockerfiles track `alpine:latest` and unpinned apk packages, so only the upstream tool version is pinned. To build for a different architecture, pass `--platform` through Docker — e.g. `docker build --platform linux/amd64 ...` — bearing in mind that emulated builds are considerably slower.
+The AVIF Makefile target explicitly builds for `linux/arm64` and checks both ELF machine types. Other Dockerfiles build for the host architecture, so run the build on an arm64 machine (Apple Silicon, or any aarch64 Linux host) to match the architecture of the committed binaries. Builds are not byte-for-byte reproducible; the Dockerfiles track `alpine:latest` and unpinned apk packages, so builds are not fully pinned. AVIF additionally pins the dav1d source version and commit. For tools without an ARM64 build check, select a different architecture with Docker's `--platform` option, for example `docker build --platform linux/amd64 ...`. Emulated builds are considerably slower.
 
 ### Build a single binary
 
@@ -207,9 +219,16 @@ Verify that all binaries work correctly by running them inside an Alpine Docker 
 ```bash
 make test          # build (if needed) + test
 make test-only     # test without rebuilding
+make test-avif     # focused AVIF regression checks
 ```
 
-The tests encode and decode a real WebP image, then generate a three-frame APNG
+The AVIF tests verify both committed binaries are stripped static ARM64 ELF files
+without a dynamic interpreter or shared dependencies. Generated fixtures cover
+8/10/12-bit, RGB/alpha, 4:2:0/4:4:4 and 2x2 grids. They assert dav1d is selected
+when `--codec` is omitted, compare every decoded RGBA sample against explicit
+dav1d and AOM, and check default/explicit AOM encoding and a lossless RGBA round trip.
+
+The other tests encode and decode a real WebP image, then generate a three-frame APNG
 and run ImageMagick 7.1.2-31's ffmpeg delegate command with WebP intermediates.
 They also exercise the bundled ImageMagick's APNG delegate and check PAM
 intermediates for older ImageMagick delegates. FFmpeg links
