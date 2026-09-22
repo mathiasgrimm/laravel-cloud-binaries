@@ -4,6 +4,8 @@ OPTIPNG_VERSION   := 0.7.8
 PNGQUANT_VERSION  := 3.0.3
 LIBWEBP_VERSION   := v1.5.0
 LIBAVIF_VERSION   := v1.2.1
+DAV1D_VERSION     := 1.5.1
+DAV1D_COMMIT      := 42b2b24fb8819f1ed3643aa9cf2a62f03868e3aa
 GIFSICLE_VERSION     := v1.96
 FFMPEG_VERSION       := n7.1.1
 IMAGEMAGICK_VERSION  := 7.1.1-43
@@ -13,7 +15,7 @@ QPDF_VERSION         := v12.4.0
 
 BINARIES := bin/jpegoptim bin/optipng bin/pngquant bin/cwebp bin/dwebp bin/avifenc bin/avifdec bin/gifsicle bin/ffmpeg bin/ffprobe bin/magick bin/zstd bin/qpdf
 
-.PHONY: all test test-only clean clean-images clean-all
+.PHONY: all test test-only test-avif clean clean-images clean-all
 
 all: $(BINARIES)
 
@@ -55,9 +57,9 @@ bin/cwebp bin/dwebp: cwebp/Dockerfile
 	docker rm tmp-cwebp
 
 # --- avifenc + avifdec (single image, two binaries) ---
-bin/avifenc bin/avifdec: avifenc/Dockerfile
+bin/avifenc bin/avifdec: avifenc/Dockerfile Makefile
 	mkdir -p bin
-	docker build --build-arg VERSION=$(LIBAVIF_VERSION) -t avifenc ./avifenc
+	docker build --platform linux/arm64 --build-arg VERSION=$(LIBAVIF_VERSION) --build-arg DAV1D_VERSION=$(DAV1D_VERSION) --build-arg DAV1D_COMMIT=$(DAV1D_COMMIT) -t avifenc ./avifenc
 	docker rm -f tmp-avifenc 2>/dev/null || true
 	docker create --name tmp-avifenc avifenc /true
 	docker cp tmp-avifenc:/avifenc bin/avifenc
@@ -113,7 +115,10 @@ bin/qpdf: qpdf/Dockerfile
 # --- Test ---
 test: $(BINARIES) test-only
 
-test-only:
+test-avif:
+	docker run --rm --platform linux/arm64 -v "$(CURDIR)/bin:/opt/bin:ro" -v "$(CURDIR)/tests:/opt/tests:ro" alpine sh -c 'apk add --no-cache file binutils >/dev/null && sh /opt/tests/avif.sh'
+
+test-only: test-avif
 	docker run --rm -v "$(CURDIR)/bin:/opt/bin:ro" -v "$(CURDIR)/tests:/opt/tests:ro" alpine sh /opt/tests/ffmpeg-webp.sh
 	docker run --rm -v $(CURDIR)/bin:/opt/bin alpine sh -c ' \
 		set -e && \

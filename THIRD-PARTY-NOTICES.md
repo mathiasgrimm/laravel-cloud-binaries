@@ -96,7 +96,7 @@ dependencies. The notable ones, by binary:
 | `optipng` | libpng (`Libpng`), zlib (`Zlib`) |
 | `pngquant` | libpng, zlib, Little CMS (`MIT`) |
 | `cwebp`, `dwebp` | libpng, libjpeg-turbo, giflib (`MIT`), libtiff (`libtiff`), zlib |
-| `avifenc`, `avifdec` | libaom (`BSD-2-Clause` + AOM patent license), libpng, libjpeg-turbo, zlib |
+| `avifenc`, `avifdec` | dav1d `1.5.1` (`BSD-2-Clause`, [license](licenses/dav1d.txt)), libaom (`BSD-2-Clause` + AOM patent license), libpng, libjpeg-turbo, zlib |
 | `gifsicle` | — |
 | `ffmpeg`, `ffprobe` | x264 (`GPL-2.0-or-later`), x265 `4.1` (`GPL-2.0`), libvpx `v1.15.0` (`BSD-3-Clause`), Opus `v1.5.2` (`BSD-3-Clause`), libwebp `v1.5.0` (`BSD-3-Clause`, [license](licenses/libwebp.txt)), LAME (`LGPL-2.1-or-later`), FreeType (`FTL OR GPL-2.0-or-later`), libpng, zlib, bzip2 (`bzip2-1.0.6`), Brotli (`MIT`) |
 | `magick` | libjpeg-turbo, libpng, libwebp, FreeType, libxml2 (`MIT`), libtiff `v4.7.0`, zlib, xz/liblzma (`0BSD`), bzip2, Brotli |
@@ -115,8 +115,9 @@ the Independent Modules", so their presence adds no copyleft obligation of its o
 
 Unversioned components above are the Alpine Linux packages current at build time; the
 `alpine:latest` base image and its `apk` packages are not pinned, so exact versions
-vary by build date. Only the primary upstream tool versions are pinned, in the
-`Makefile`.
+vary by build date. Primary upstream tool versions and the dav1d version/commit are pinned in the
+`Makefile`. The [AVIF build record](avifenc/BUILD.md) lists the dependency versions
+used for the shipped AVIF artifacts.
 
 ## Source code
 
