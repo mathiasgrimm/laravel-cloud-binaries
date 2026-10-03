@@ -24,6 +24,7 @@ corresponding source available. See [Source code](#source-code) below.
 | `magick` | [ImageMagick](https://github.com/ImageMagick/ImageMagick) | `7.1.1-43` | `ImageMagick` | [imagemagick.txt](licenses/imagemagick.txt) |
 | `zstd` | [facebook/zstd](https://github.com/facebook/zstd) | `v1.5.7` | `BSD-3-Clause` | [zstd.txt](licenses/zstd.txt) |
 | `qpdf` | [qpdf/qpdf](https://github.com/qpdf/qpdf) | `v12.4.0` | `Apache-2.0` | [Apache-2.0.txt](licenses/Apache-2.0.txt), [RSA-MD.txt](licenses/RSA-MD.txt) |
+| `ssimulacra2`, `butteraugli_main` | [libjxl/libjxl](https://github.com/libjxl/libjxl) | `v0.12.0` | `BSD-3-Clause` | [libjxl.txt](licenses/libjxl.txt), [libjxl-PATENTS.txt](licenses/libjxl-PATENTS.txt) |
 
 ### Why ffmpeg and ffprobe are GPL, not LGPL
 
@@ -98,13 +99,15 @@ dependencies. The notable ones, by binary:
 | `cwebp`, `dwebp` | libpng, libjpeg-turbo, giflib (`MIT`), libtiff (`libtiff`), zlib |
 | `avifenc`, `avifdec` | dav1d `1.5.1` (`BSD-2-Clause`, [license](licenses/dav1d.txt)), libaom (`BSD-2-Clause` + AOM patent license), libpng, libjpeg-turbo, zlib |
 | `gifsicle` | — |
-| `ffmpeg`, `ffprobe` | x264 (`GPL-2.0-or-later`), x265 `4.1` (`GPL-2.0`), libvpx `v1.15.0` (`BSD-3-Clause`), Opus `v1.5.2` (`BSD-3-Clause`), libwebp `v1.5.0` (`BSD-3-Clause`, [license](licenses/libwebp.txt)), LAME (`LGPL-2.1-or-later`), FreeType (`FTL OR GPL-2.0-or-later`), libpng, zlib, bzip2 (`bzip2-1.0.6`), Brotli (`MIT`) |
-| `magick` | libjpeg-turbo, libpng, libwebp, FreeType, libxml2 (`MIT`), libtiff `v4.7.0`, zlib, xz/liblzma (`0BSD`), bzip2, Brotli |
+| `ffmpeg`, `ffprobe` | x264 (`GPL-2.0-or-later`), x265 `4.1` (`GPL-2.0`), libvpx `v1.15.0` (`BSD-3-Clause`), Opus `v1.5.2` (`BSD-3-Clause`), libwebp `v1.5.0` (`BSD-3-Clause`, [license](licenses/libwebp.txt)), libvmaf `v3.2.1` with its built-in VMAF models (`BSD-2-Clause-Patent`, [license](licenses/libvmaf.txt)), LAME (`LGPL-2.1-or-later`), FreeType (`FTL OR GPL-2.0-or-later`), libpng, zlib, bzip2 (`bzip2-1.0.6`), Brotli (`MIT`) |
+| `magick` | Little CMS `2.19.1` (`MIT`, [license](licenses/lcms2.txt)), libjpeg-turbo, libpng, libwebp, FreeType, libxml2 (`MIT`), libtiff `v4.7.0`, zlib, xz/liblzma (`0BSD`), bzip2, Brotli |
 | `zstd` | zlib, xz/liblzma, LZ4 (`BSD-2-Clause`) |
 | `qpdf` | zlib, libjpeg-turbo, and qpdf's built-in crypto provider: Rijndael/AES (public domain), sha2 from sphlib (`MIT`), MD5 derived from the RSA Data Security, Inc. MD5 Message-Digest Algorithm (`RSA-MD`) |
+| `ssimulacra2`, `butteraugli_main` | Highway `1.2.0` (`Apache-2.0 OR BSD-3-Clause`, [BSD-3-Clause text](licenses/highway.txt)), Brotli `v1.2.0` ([license](licenses/brotli.txt)), skcms (`BSD-3-Clause`, [license](licenses/skcms.txt)), libpng, libjpeg-turbo, zlib |
 
-Every gcc-built binary above also contains libgcc, and `qpdf`, `ffmpeg` and `ffprobe`
-additionally contain libstdc++ — qpdf is C++, and ffmpeg/ffprobe pull it in through x265.
+Every gcc-built binary above also contains libgcc, and `qpdf`, `ffmpeg`, `ffprobe`,
+`ssimulacra2` and `butteraugli_main` additionally contain libstdc++: qpdf and the libjxl
+tools are C++, and ffmpeg/ffprobe pull it in through x265 and libvmaf.
 (`magick` is C and contains neither libstdc++ nor any other C++ runtime. `pngquant` is
 built with Rust rather than gcc, so it carries the `compiler_builtins` crate
 — `Apache-2.0 OR MIT` — in place of libgcc.) Both GCC libraries are
@@ -116,7 +119,8 @@ the Independent Modules", so their presence adds no copyleft obligation of its o
 Unversioned components above are the Alpine Linux packages current at build time; the
 `alpine:latest` base image and its `apk` packages are not pinned, so exact versions
 vary by build date. Primary upstream tool versions and the dav1d version/commit are pinned in the
-`Makefile`. The [AVIF build record](avifenc/BUILD.md) lists the dependency versions
+`Makefile`, as are the libjxl, libvmaf and Little CMS versions and commits. The libjxl tools use
+the Highway, Brotli and skcms commits pinned by libjxl itself. The [AVIF build record](avifenc/BUILD.md) lists the dependency versions
 used for the shipped AVIF artifacts.
 
 ## Source code
