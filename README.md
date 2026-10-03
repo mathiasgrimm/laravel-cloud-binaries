@@ -303,6 +303,20 @@ make clean-images   # remove Docker images
 make clean-all      # both
 ```
 
+### Releasing
+
+The binaries are committed, so a release does not rebuild them. Merge the change
+into `main` first, then run on an up-to-date, clean `main`:
+
+```bash
+make release VERSION=v1.5.0
+make release VERSION=v1.5.0 NOTES=notes.md   # use your own release notes
+```
+
+This runs `make test-only`, creates an annotated `v1.5.0` tag on the current
+commit, pushes the tag and creates the GitHub release. Without `NOTES`, GitHub
+generates the release notes. Packagist picks up the new tag automatically.
+
 ## Licensing
 
 The MIT license in `LICENSE` covers only this repository's build scripts and
