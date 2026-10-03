@@ -24,7 +24,10 @@ RUN apk add --no-cache \
     libpng-static \
     brotli-dev \
     brotli-static \
-    diffutils
+    diffutils \
+    meson \
+    ninja \
+    xxd
 
 # Build x265 from source (static) — Alpine package lacks .a
 # Patch CMakeLists.txt for CMake 4.x compatibility
@@ -73,6 +76,29 @@ RUN git clone --depth 1 --branch ${LIBWEBP_VERSION} https://chromium.googlesourc
       -DWEBP_BUILD_EXTRAS=OFF && \
     cmake --build build -j$(nproc) && cmake --install build
 
+# Build libvmaf from source (static) for the libvmaf filter, at a verified commit.
+# Floating-point extractors (float_ssim, float_ms_ssim) are off by default.
+# Built-in models need no model files at runtime. libvmaf contains C++ (libsvm),
+# so its static link needs libstdc++, as x265 does.
+ARG LIBVMAF_VERSION
+ARG LIBVMAF_COMMIT
+RUN git clone --depth 1 --branch ${LIBVMAF_VERSION} https://github.com/Netflix/vmaf.git /src/vmaf && \
+    test "$(git -C /src/vmaf rev-parse HEAD)" = "${LIBVMAF_COMMIT}" && \
+    cd /src/vmaf/libvmaf && \
+    meson setup build \
+      --buildtype=release \
+      --default-library=static \
+      --prefix=/usr/local \
+      --libdir=lib \
+      -Denable_float=true \
+      -Dbuilt_in_models=true \
+      -Denable_tests=false \
+      -Denable_docs=false \
+      -Denable_tools=false && \
+    ninja -C build && ninja -C build install && \
+    sed -i 's/^Libs:.*/& -lstdc++/' /usr/local/lib/pkgconfig/libvmaf.pc && \
+    grep -q '^Libs:.* -lstdc++$' /usr/local/lib/pkgconfig/libvmaf.pc
+
 ARG VERSION
 RUN git clone --depth 1 --branch ${VERSION} https://github.com/FFmpeg/FFmpeg.git /src/ffmpeg
 
@@ -90,12 +116,18 @@ RUN PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:$PKG_CO
       --enable-libmp3lame \
       --enable-libfreetype \
       --enable-libwebp \
+      --enable-libvmaf \
       --extra-cflags="-I/usr/local/include" \
       --extra-ldflags="-static -L/usr/local/lib -L/usr/local/lib64" \
       --pkg-config-flags="--static" \
       --disable-doc \
       --disable-ffplay && \
     make -j$(nproc)
+
+# Emit dependency provenance into the build log for artifact updates.
+RUN cat /etc/alpine-release && \
+    apk list --installed x264-dev lame-dev freetype-static zlib-static bzip2-static libpng-static brotli-static musl && \
+    git -C /src/vmaf rev-parse HEAD && git -C /src/libwebp rev-parse HEAD
 
 # Strip symbol tables -- these are shipped artifacts, not debugging targets
 RUN strip /src/ffmpeg/ffmpeg /src/ffmpeg/ffprobe
